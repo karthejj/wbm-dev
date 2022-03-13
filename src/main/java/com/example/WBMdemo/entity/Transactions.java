@@ -73,4 +73,7 @@ public class Transactions {
 	@Column(name = "FINAL_AMOUNT")
 	private BigDecimal finalAmount;
 	
+	@Column(name = "TRANSACTION_COMPLETED")
+	private Boolean transactionCompleted;
+	
 }

@@ -39,9 +39,10 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setMaterialPrice(dto.getMaterialPrice());
 			transactions.setVat(dto.getVat());
 			transactions.setFinalAmount(dto.getFinalAmount());
-//			if(dto.flag){
-//			transactions.setfinalflag(true);
-//			}
+			if(Objects.nonNull(dto.getIsTransactionCompleted()) && 
+					dto.getIsTransactionCompleted()){
+			transactions.setTransactionCompleted(true);
+			}
 		}
 		Transactions transObj = transactionRepository.save(transactions);
 		dto.setId(transObj.getTransactionId());
