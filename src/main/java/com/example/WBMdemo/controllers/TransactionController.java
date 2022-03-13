@@ -19,7 +19,7 @@ public class TransactionController {
 	@Autowired
 	private TransactionService transactionService;
 	
-	@PostMapping("/transaction/saveTemporary")
+	@PostMapping("/transaction/saveTransactions")
 	public @ResponseBody TransactionDto savetemporaryTransaction(@RequestBody TransactionDto dto) {
 		LOGGER.debug("Inside savetemporaryTransaction method of TransactionController start ");
 		TransactionDto dtoResponse = transactionService.saveTemporaryTransaction(dto);
