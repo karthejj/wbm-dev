@@ -29,7 +29,7 @@ public class Material {
 	@SequenceGenerator(name="material-seq-gen",sequenceName="MATERIAL_SEQ_GEN", initialValue=1, allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator="material-seq-gen")
 	@Column(name = "ID")
-	private Long materialId;
+	private Integer materialId;
 	
 	@Column(name = "MATERIAL_NAME")
 	private String materialName;

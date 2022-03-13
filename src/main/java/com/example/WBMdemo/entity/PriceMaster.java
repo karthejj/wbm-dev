@@ -33,7 +33,7 @@ public class PriceMaster {
 	private Long priceId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ID")
+	@JoinColumn(name = "MATERIAL_ID")
 	private Material material;
 	
 	@Column(name = "CREATED_MODIFIED_DATE", nullable = true)
