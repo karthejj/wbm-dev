@@ -76,4 +76,8 @@ public class Transactions {
 	@Column(name = "TRANSACTION_COMPLETED")
 	private Boolean transactionCompleted;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "STATUS_ID")
+	private StatusMaster status;
+	
 }

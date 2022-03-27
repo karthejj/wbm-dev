@@ -27,13 +27,13 @@ public class MaterialController {
 	@Autowired
 	private MaterialService materialService;
 
-	@PostMapping("/material")
+	@PostMapping("/material/savematerial")
 	public Material saveMaterial(@Valid @RequestBody Material material) throws DuplicateMaterialException {
 		LOGGER.debug("Inside saveMarterial method of MaterialController ");
 		return materialService.saveMaterial(material);
 	}
 	
-	@GetMapping("/material")
+	@GetMapping("/material/materialList")
 	public List<Material> fetchMaterialList(){
 		LOGGER.debug("Inside fetchMaterialList method of MaterialController ");
 		return materialService.fetchMaterialList();

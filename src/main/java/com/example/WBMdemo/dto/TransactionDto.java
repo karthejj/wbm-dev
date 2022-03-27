@@ -23,6 +23,8 @@ public class TransactionDto {
 	private BigDecimal vat;
 	private BigDecimal finalAmount;
 	private Boolean isTransactionCompleted = false;
+	private Boolean isTransactionCancelled = false;
+	private int transactionStatus;
 	
 	
 }

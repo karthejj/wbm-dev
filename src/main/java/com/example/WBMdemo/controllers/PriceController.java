@@ -23,7 +23,7 @@ public class PriceController {
 	@Autowired
 	private PriceService priceService;
 
-	@PostMapping("/price")
+	@PostMapping("/price/saveprice")
 	public PriceMaster saveMaterial(@Valid @RequestBody PriceMaster price) {
 		LOGGER.debug("Inside savePrice method of PriceController ");
 		return priceService.savePrice(price);

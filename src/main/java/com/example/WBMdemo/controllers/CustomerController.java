@@ -26,13 +26,13 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 
-	@PostMapping("/customer")
+	@PostMapping("/customer/savecustomer")
 	public Customer saveCustomer(@Valid @RequestBody Customer customer) throws DuplicateCustomerException {
 		LOGGER.debug("Inside saveCustomer method of CustomerController ");
 		return customerService.saveCustomer(customer);
 	}
 	
-	@GetMapping("/customer")
+	@GetMapping("/customer/customerList")
 	public List<Customer> fetchCustomerList(){
 		LOGGER.debug("Inside fetchCustomerList method of CustomerController ");
 		return customerService.fetchCustomerList();

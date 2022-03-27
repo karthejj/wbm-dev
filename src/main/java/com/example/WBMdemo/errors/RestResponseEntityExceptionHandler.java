@@ -42,5 +42,15 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		ErrorMessage message = new ErrorMessage(HttpStatus.FOUND, exception.getMessage());
 		return ResponseEntity.status(HttpStatus.FOUND).body(message);
 	}
+	
+	@ExceptionHandler(TransactionNotFoundException.class)
+	public ResponseEntity<ErrorMessage> transactionNotFoundException(TransactionNotFoundException exception,
+			WebRequest request){
+		
+		ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
+		
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message); 
+		
+	}
 }
 
