@@ -3,6 +3,7 @@ package com.example.WBMdemo.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -106,14 +107,18 @@ public class TransactionserviceImpl implements TransactionService {
 	
 	public TransactionDto getTransactionById(long transactionId) throws TransactionNotFoundException {
 		TransactionDto transDto = new TransactionDto();
-		Transactions transactionObj = transactionRepository.findById(transactionId).get();
-		if(Objects.nonNull(transactionObj)) {		
+		Optional<Transactions> obj = transactionRepository.findById(transactionId); 
+//		.get();
+		if(!obj.isEmpty()) {
+			Transactions transactionObj = obj.get();		
 			transDto.setId(transactionObj.getTransactionId());
 			transDto.setCustomerId(transactionObj.getCustomerId());
 			transDto.setCustomerName(transactionObj.getCustomerName());
-			transDto.setCustomerType(transactionObj.getCustomer().getCustomerId());
+			transDto.setCustomerType(transactionObj.getCustomer() != null ? 
+					transactionObj.getCustomer().getCustomerId() : 0);
 			transDto.setVehicleNumber(transactionObj.getVehicleNumber());
-			transDto.setMaterialType(transactionObj.getMaterial().getMaterialId());
+			transDto.setMaterialType(transactionObj.getMaterial() != null ? 
+					transactionObj.getMaterial().getMaterialId() : 0);
 			transDto.setDriverCount(transactionObj.getDriverCount());
 			transDto.setFirstWeight(transactionObj.getFirstWeight());
 			transDto.setSecondWeight(transactionObj.getSecondWeight());
@@ -122,7 +127,8 @@ public class TransactionserviceImpl implements TransactionService {
 			transDto.setVat(transactionObj.getVat());
 			transDto.setFinalAmount(transactionObj.getFinalAmount());
 			transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
-			transDto.setTransactionStatus(transactionObj.getStatus().getStatusId());
+			transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
+					transactionObj.getStatus().getStatusId() : 0);
 		} else {
 			throw new TransactionNotFoundException("Transaction Not Found ");
 		}
