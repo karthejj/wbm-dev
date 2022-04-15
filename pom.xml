@@ -90,7 +90,7 @@
         </configuration>
       </plugin>
      </plugins>
-    <finalName>wbmdemo-docker</finalName>
+
   </build>
 
 </project>
