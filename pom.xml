@@ -89,8 +89,39 @@
           </excludes>
         </configuration>
       </plugin>
-     </plugins>
-
+      <plugin>
+	      <groupId>com.spotify</groupId>
+	      <artifactId>dockerfile-maven-plugin</artifactId>
+	      <version>1.4.3</version>
+	      <executions>
+	      	<execution>
+	      		<id>default</id>
+	      		<goals>
+	      			<goal>build</goal>
+	      			<goal>push</goal>
+	      		</goals>
+	      		<configuration>
+	      			<username>jkarthe</username>
+        			<password>jKdocker@321</password>
+	      			<repository>${project.artifactId}</repository>
+	      			<tag>${project.version}</tag>
+	      			<buildArgs>
+                  		<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+             		</buildArgs>
+	      		</configuration>
+	      
+	      	</execution>
+	      </executions>
+	      <dependencies>
+	      	<dependency>
+	      		<groupId>javax.activation</groupId>
+	      		<artifactId>javax.activation-api</artifactId>
+	      		<version>1.2.0</version>
+	      	</dependency>
+	      </dependencies>
+      </plugin>
+    </plugins>
+    <finalName>wbmdemo-docker</finalName>
   </build>
 
 </project>
