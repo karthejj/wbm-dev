@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 //import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.WBMdemo.entity.User;
 
@@ -19,6 +21,12 @@ public class WbMdemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WbMdemoApplication.class, args);
 	}
+	
+    @RequestMapping("/")
+    @ResponseBody
+    String home() {
+      return "Hello Weight Bridge!";
+    }
 	
 //	@Bean
 //	public PasswordEncoder passwordEncoder() {

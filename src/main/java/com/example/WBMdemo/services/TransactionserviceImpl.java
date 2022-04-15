@@ -1,5 +1,6 @@
 package com.example.WBMdemo.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +49,8 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setFirstWeight(dto.getFirstWeight());
 			transactions.setSecondWeight(dto.getSecondWeight());
 			transactions.setTotalWeight(dto.getTotalWeight());
-			transactions.setMaterialPrice(dto.getMaterialPrice());
+			BigDecimal materialPrice = dto.getMaterialPrice().multiply(dto.getTotalWeight());
+			transactions.setMaterialPrice(materialPrice);
 			transactions.setVat(dto.getVat());
 			transactions.setFinalAmount(dto.getFinalAmount());
 			if(Objects.nonNull(dto.getIsTransactionCompleted()) && 
