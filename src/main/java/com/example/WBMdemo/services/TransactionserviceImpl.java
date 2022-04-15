@@ -111,7 +111,8 @@ public class TransactionserviceImpl implements TransactionService {
 		TransactionDto transDto = new TransactionDto();
 		Optional<Transactions> obj = transactionRepository.findById(transactionId); 
 //		.get();
-		if(!obj.isEmpty()) {
+//		if(!obj.isEmpty()) {
+		if(!transactionRepository.findById(transactionId).isPresent()) {
 			Transactions transactionObj = obj.get();		
 			transDto.setId(transactionObj.getTransactionId());
 			transDto.setCustomerId(transactionObj.getCustomerId());
