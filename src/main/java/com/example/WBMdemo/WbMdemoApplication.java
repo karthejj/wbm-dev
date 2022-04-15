@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.WBMdemo.entity.User;
 
@@ -23,10 +24,14 @@ public class WbMdemoApplication {
 		SpringApplication.run(WbMdemoApplication.class, args);
 	}
 	
-	@GetMapping("/")
-    public String home() {
-      return "Hello Weight Bridge!";
-    }
+	@RestController
+	class Helloweight{
+		@GetMapping("/")
+	    String home() {
+	      return "Hello Weight Bridge!";
+	    }	
+	}
+	
 	
 //	@Bean
 //	public PasswordEncoder passwordEncoder() {
