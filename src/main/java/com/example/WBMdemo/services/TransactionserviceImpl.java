@@ -109,11 +109,11 @@ public class TransactionserviceImpl implements TransactionService {
 	
 	public TransactionDto getTransactionById(long transactionId) throws TransactionNotFoundException {
 		TransactionDto transDto = new TransactionDto();
-		Optional<Transactions> obj = transactionRepository.findById(transactionId); 
+		Transactions transactionObj = transactionRepository.findById(transactionId).get(); 
 //		.get();
-		if(!obj.isEmpty()) {
+		if(transactionObj!=null) {
 //		if(!transactionRepository.findById(transactionId).isPresent()) {
-			Transactions transactionObj = obj.get();		
+//			Transactions transactionObj = obj.get();		
 			transDto.setId(transactionObj.getTransactionId());
 			transDto.setCustomerId(transactionObj.getCustomerId());
 			transDto.setCustomerName(transactionObj.getCustomerName());
