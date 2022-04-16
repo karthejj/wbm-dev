@@ -34,4 +34,7 @@ public class Material {
 	@Column(name = "MATERIAL_NAME")
 	private String materialName;
 	
+	@Column(name = "MATERIAL_PRICE")
+	private Long materialPrice;
+	
 }

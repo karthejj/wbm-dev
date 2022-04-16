@@ -24,9 +24,10 @@ public class MaterialServiceImpl implements MaterialService {
 		// TODO Auto-generated method stub
 		Material materialDB = materialRepository.findByMaterialName(material.getMaterialName());
 		if(Objects.nonNull(materialDB)) {
-			throw new DuplicateMaterialException("Material "+material.getMaterialName()+" already exists ");
+			materialDB.setMaterialPrice(material.getMaterialPrice());
+			materialDB.setMaterialName(material.getMaterialName());
 		}
-		return materialRepository.save(material);
+		return materialRepository.save(materialDB);
 	}
 
 	@Override
