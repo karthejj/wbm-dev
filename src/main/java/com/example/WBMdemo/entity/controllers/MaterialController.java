@@ -1,4 +1,4 @@
-package com.example.WBMdemo.controllers;
+package com.example.WBMdemo.entity.controllers;
 
 import java.util.List;
 
@@ -12,11 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.WBMdemo.entity.Customer;
 import com.example.WBMdemo.entity.Material;
-import com.example.WBMdemo.errors.DuplicateCustomerException;
 import com.example.WBMdemo.errors.DuplicateMaterialException;
-import com.example.WBMdemo.services.CustomerService;
 import com.example.WBMdemo.services.MaterialService;
 
 @RestController

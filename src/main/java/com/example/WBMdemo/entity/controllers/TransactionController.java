@@ -1,4 +1,4 @@
-package com.example.WBMdemo.controllers;
+package com.example.WBMdemo.entity.controllers;
 
 import java.util.List;
 
@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.WBMdemo.dto.TransactionDto;
-import com.example.WBMdemo.entity.Vehicle;
 import com.example.WBMdemo.errors.TransactionNotFoundException;
-import com.example.WBMdemo.errors.VehicleNotFoundException;
 import com.example.WBMdemo.services.TransactionService;
 
 @RestController
