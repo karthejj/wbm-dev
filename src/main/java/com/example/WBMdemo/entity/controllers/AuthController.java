@@ -1,4 +1,4 @@
-package com.example.WBMdemo.controllers;
+package com.example.WBMdemo.entity.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

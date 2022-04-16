@@ -1,4 +1,4 @@
-package com.example.WBMdemo.controllers;
+package com.example.WBMdemo.entity.controllers;
 
 import java.util.List;
 import java.util.Objects;
