@@ -61,6 +61,7 @@ public class TransactionserviceImpl implements TransactionService {
 				if(Objects.nonNull(dto.getIsTransactionCancelled()) && 
 						dto.getIsTransactionCancelled()) {
 					transactions.setStatus(statusMasterRepository.findByStatusId(2));
+					transactions.setCancelReason(dto.getCancelReason());
 				} else {
 					transactions.setStatus(statusMasterRepository.findByStatusId(1));
 				}
@@ -98,6 +99,7 @@ public class TransactionserviceImpl implements TransactionService {
 				transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
 				transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
 						transactionObj.getStatus().getStatusId() : 0);
+				transDto.setCancelReason(transactionObj.getCancelReason());
 				
 				transactionDtoList.add(transDto);
 			}
@@ -132,6 +134,7 @@ public class TransactionserviceImpl implements TransactionService {
 			transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
 			transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
 					transactionObj.getStatus().getStatusId() : 0);
+			transDto.setCancelReason(transactionObj.getCancelReason());
 		} else {
 			throw new TransactionNotFoundException("Transaction Not Found ");
 		}

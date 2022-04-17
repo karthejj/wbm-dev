@@ -80,4 +80,7 @@ public class Transactions {
 	@JoinColumn(name = "STATUS_ID")
 	private StatusMaster status;
 	
+	@Column(name = "CANCEL_REASON")
+	private String cancelReason;
+	
 }

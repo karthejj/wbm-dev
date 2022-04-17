@@ -25,6 +25,7 @@ public class TransactionDto {
 	private Boolean isTransactionCompleted = false;
 	private Boolean isTransactionCancelled = false;
 	private int transactionStatus;
+	private String cancelReason;
 	
 	
 }

@@ -26,8 +26,10 @@ public class MaterialServiceImpl implements MaterialService {
 		if(Objects.nonNull(materialDB)) {
 			materialDB.setMaterialPrice(material.getMaterialPrice());
 			materialDB.setMaterialName(material.getMaterialName());
+			return materialRepository.save(materialDB);
+		} else {
+			return materialRepository.save(material);
 		}
-		return materialRepository.save(materialDB);
 	}
 
 	@Override
