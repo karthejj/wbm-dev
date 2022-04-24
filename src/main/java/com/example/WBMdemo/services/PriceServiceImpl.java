@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.WBMdemo.entity.PriceMaster;
-import com.example.WBMdemo.entity.Vehicle;
-import com.example.WBMdemo.errors.VehicleNotFoundException;
 import com.example.WBMdemo.repository.PriceRepository;
 
 @Service
@@ -15,6 +13,7 @@ public class PriceServiceImpl implements PriceService {
 
 	@Autowired
 	private PriceRepository priceRepository;
+
 	
 	@Override
 	public PriceMaster savePrice(PriceMaster price) {
@@ -33,6 +32,5 @@ public class PriceServiceImpl implements PriceService {
 		return priceDB;
 		
 	}
-	
 
 }

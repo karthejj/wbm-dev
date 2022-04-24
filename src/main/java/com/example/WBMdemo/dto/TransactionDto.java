@@ -14,7 +14,7 @@ public class TransactionDto {
 	private String customerId;
 	private String vehicleNumber;
 	private int customerType;
-	private int materialType;
+	private long materialType;
 	private int driverCount;
 	private BigDecimal firstWeight;
 	private BigDecimal secondWeight;

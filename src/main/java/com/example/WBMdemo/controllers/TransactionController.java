@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.WBMdemo.dto.TransactionDto;
-import com.example.WBMdemo.entity.Vehicle;
 import com.example.WBMdemo.errors.TransactionNotFoundException;
-import com.example.WBMdemo.errors.VehicleNotFoundException;
 import com.example.WBMdemo.services.TransactionService;
 
 @RestController
@@ -40,9 +38,10 @@ public class TransactionController {
 		return transactionService.getTransactionById(transactionId);
 	}
 	
-	@GetMapping("/transaction/transactionList")
-	public  List<TransactionDto> fetchTransactionList(){
+	@GetMapping("/transaction/transactionList/{sortParam}/{order}")
+	public  List<TransactionDto> fetchTransactionList(@PathVariable("sortParam")String sortParam, 
+			@PathVariable("order")int order){
 		LOGGER.debug("Inside fetchVehicleList method of TransactionController ");
-		return transactionService.fetchTransactionList();
+		return transactionService.fetchTransactionList(sortParam, order);
 	}
 }

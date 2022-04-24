@@ -7,7 +7,7 @@ import com.example.WBMdemo.errors.TransactionNotFoundException;
 
 public interface TransactionService {
 	
-	public List<TransactionDto> fetchTransactionList();
+	public List<TransactionDto> fetchTransactionList(String sortParam, int order);
 
 	public TransactionDto saveTemporaryTransaction(TransactionDto dto);
 	

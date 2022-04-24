@@ -4,17 +4,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.WBMdemo.dto.TransactionDto;
-import com.example.WBMdemo.entity.Customer;
 import com.example.WBMdemo.entity.StatusMaster;
 import com.example.WBMdemo.entity.Transactions;
 import com.example.WBMdemo.errors.TransactionNotFoundException;
-import com.example.WBMdemo.errors.VehicleNotFoundException;
 import com.example.WBMdemo.repository.CustomerRepository;
 import com.example.WBMdemo.repository.MaterialRepository;
 import com.example.WBMdemo.repository.StatusMasterRepository;
@@ -74,9 +72,16 @@ public class TransactionserviceImpl implements TransactionService {
 	}
 	
 	@Override
-	public List<TransactionDto> fetchTransactionList() {
+	public List<TransactionDto> fetchTransactionList(String sortParam, int order) {
 		// TODO Auto-generated method stub
-		List<Transactions> transactionList =  transactionRepository.findAll();
+		List<Transactions> transactionList = null;
+		if(order==1) {
+			transactionList = 
+					transactionRepository.findAll(Sort.by(Sort.Direction.ASC, sortParam));
+		} else {
+			transactionList = 
+					transactionRepository.findAll(Sort.by(Sort.Direction.DESC, sortParam));
+		}
 		List<TransactionDto> transactionDtoList = new ArrayList<TransactionDto>();
 		if(Objects.nonNull(transactionList.size()) && transactionList.size()>0) {
 			for(Transactions transactionObj : transactionList) {
@@ -112,10 +117,7 @@ public class TransactionserviceImpl implements TransactionService {
 	public TransactionDto getTransactionById(long transactionId) throws TransactionNotFoundException {
 		TransactionDto transDto = new TransactionDto();
 		Transactions transactionObj = transactionRepository.findById(transactionId).get(); 
-//		.get();
 		if(transactionObj!=null) {
-//		if(!transactionRepository.findById(transactionId).isPresent()) {
-//			Transactions transactionObj = obj.get();		
 			transDto.setId(transactionObj.getTransactionId());
 			transDto.setCustomerId(transactionObj.getCustomerId());
 			transDto.setCustomerName(transactionObj.getCustomerName());
