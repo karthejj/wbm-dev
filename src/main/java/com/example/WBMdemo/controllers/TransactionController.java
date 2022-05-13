@@ -25,9 +25,10 @@ public class TransactionController {
 	private TransactionService transactionService;
 	
 	@PostMapping("/transaction/saveTransactions")
-	public @ResponseBody TransactionDto savetemporaryTransaction(@RequestBody TransactionDto dto) {
+	public @ResponseBody TransactionDto saveTransaction(@RequestBody TransactionDto dto) {
 		LOGGER.debug("Inside savetemporaryTransaction method of TransactionController start ");
-		TransactionDto dtoResponse = transactionService.saveTemporaryTransaction(dto);
+		TransactionDto dtoResponse = transactionService.saveTransaction(dto);
+		
 		LOGGER.debug("Inside savetemporaryTransaction method of TransactionController end ");
 		return dtoResponse;
 	}

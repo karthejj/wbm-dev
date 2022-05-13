@@ -27,7 +27,7 @@ public class MaterialController {
 	private MaterialService materialService;
 
 	@PostMapping("/material/savematerial")
-	public Material saveMaterial(@Valid @RequestBody Material material) throws DuplicateMaterialException {
+	public Material saveMaterial(@Valid @RequestBody MaterialDTO material) throws DuplicateMaterialException {
 		LOGGER.debug("Inside saveMarterial method of MaterialController ");
 		return materialService.saveMaterial(material);
 	}
@@ -45,10 +45,27 @@ public class MaterialController {
 		return materialService.getMaterial(materialId);
 	}
 
-	@PostMapping("/material/getActualMaterialCost")
-	public String getActualMaterialCost(@Valid @RequestBody MaterialDTO material) {
-		LOGGER.debug("Inside getActualMaterialCost method of MaterialController ");
-		return materialService.getActualMaterialCost(material);
+	@PostMapping("/material/getActualIncBaleMaterialCost")
+	public String getActualIncBaleMaterialCost(@Valid @RequestBody MaterialDTO material) {
+		LOGGER.debug("Inside getActualIncBaleMaterialCost method of MaterialController ");
+		return materialService.getActualIncBaleMaterialCost(material);
 	}
 	
+	@PostMapping("/material/getActualIncLooseMaterialCost")
+	public String getActualIncLooseMaterialCost(@Valid @RequestBody MaterialDTO material) {
+		LOGGER.debug("Inside getActualIncLooseMaterialCost method of MaterialController ");
+		return materialService.getActualIncLooseMaterialCost(material);
+	}
+
+	@PostMapping("/material/getActualOutBaleMaterialCost")
+	public String getActualOutBaleMaterialCost(@Valid @RequestBody MaterialDTO material) {
+		LOGGER.debug("Inside getActualOutBaleMaterialCost method of MaterialController ");
+		return materialService.getActualOutBaleMaterialCost(material);
+	}
+	
+	@PostMapping("/material/getActualOutLooseMaterialCost")
+	public String getActualOutLooseMaterialCost(@Valid @RequestBody MaterialDTO material) {
+		LOGGER.debug("Inside getActualOutLooseMaterialCost method of MaterialController ");
+		return materialService.getActualOutLooseMaterialCost(material);
+	}
 }

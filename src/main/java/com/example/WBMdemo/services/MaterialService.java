@@ -8,8 +8,11 @@ import com.example.WBMdemo.errors.DuplicateMaterialException;
 
 public interface MaterialService {
 
-	public Material saveMaterial(Material material) throws DuplicateMaterialException;
+	public Material saveMaterial(MaterialDTO material) throws DuplicateMaterialException;
 	public List<Material> fetchMaterialList(String sortParam, int order);
 	public Material getMaterial(long materialId);
-	public String getActualMaterialCost(MaterialDTO material);
+	public String getActualIncBaleMaterialCost(MaterialDTO material);
+	public String getActualIncLooseMaterialCost(MaterialDTO material);
+	public String getActualOutBaleMaterialCost(MaterialDTO material);
+	public String getActualOutLooseMaterialCost(MaterialDTO material);
 }

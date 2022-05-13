@@ -83,4 +83,11 @@ public class Transactions {
 	@Column(name = "CANCEL_REASON")
 	private String cancelReason;
 	
+	@Column(name = "TRANSFER_TYPE")
+	private String transfer_type;
+	
+	@Column(name = "BALE_LOOSE")
+	private String baleOrLoose;
+	
+	
 }

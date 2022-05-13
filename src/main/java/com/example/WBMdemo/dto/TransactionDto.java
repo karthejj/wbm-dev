@@ -2,6 +2,8 @@ package com.example.WBMdemo.dto;
 
 import java.math.BigDecimal;
 
+import com.example.WBMdemo.entity.TransferType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,6 +28,8 @@ public class TransactionDto {
 	private Boolean isTransactionCancelled = false;
 	private int transactionStatus;
 	private String cancelReason;
+	private TransferType transferType;
+	private String baleOrLoose;
 	
 	
 }

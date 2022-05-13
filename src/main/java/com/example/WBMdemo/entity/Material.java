@@ -34,7 +34,16 @@ public class Material {
 	@Column(name = "MATERIAL_NAME")
 	private String materialName;
 	
-	@Column(name = "MATERIAL_PRICE")
-	private BigDecimal materialPrice;
+	@Column(name = "MATERIAL_INC_BALE_PRICE")
+	private BigDecimal materialIncBalePrice;
+	
+	@Column(name = "MATERIAL_INC_LOOSE_PRICE")
+	private BigDecimal materialIncLoosePrice;
+	
+	@Column(name = "MATERIAL_OUT_BALE_PRICE")
+	private BigDecimal materialOutBalePrice;
+	
+	@Column(name = "MATERIAL_OUT_LOOSE_PRICE")
+	private BigDecimal materialOutLoosePrice;
 	
 }

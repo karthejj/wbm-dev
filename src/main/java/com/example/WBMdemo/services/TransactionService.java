@@ -9,7 +9,7 @@ public interface TransactionService {
 	
 	public List<TransactionDto> fetchTransactionList(String sortParam, int order);
 
-	public TransactionDto saveTemporaryTransaction(TransactionDto dto);
+	public TransactionDto saveTransaction(TransactionDto dto);
 	
 	public TransactionDto getTransactionById(long transactionId) throws TransactionNotFoundException;
 }

@@ -10,8 +10,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.WBMdemo.dto.TransactionDto;
+import com.example.WBMdemo.entity.Material;
 import com.example.WBMdemo.entity.StatusMaster;
 import com.example.WBMdemo.entity.Transactions;
+import com.example.WBMdemo.entity.TransferType;
 import com.example.WBMdemo.errors.TransactionNotFoundException;
 import com.example.WBMdemo.repository.CustomerRepository;
 import com.example.WBMdemo.repository.MaterialRepository;
@@ -32,7 +34,7 @@ public class TransactionserviceImpl implements TransactionService {
 	private StatusMasterRepository statusMasterRepository;
 	
 	@Override
-	public TransactionDto saveTemporaryTransaction(TransactionDto dto) {
+	public TransactionDto saveTransaction(TransactionDto dto) {
 		
 		Transactions transactions = new Transactions();
 		StatusMaster status = new StatusMaster();
@@ -43,24 +45,51 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setVehicleNumber(dto.getVehicleNumber());
 			transactions.setCustomer(customerRepository.findByCustomerId(dto.getCustomerType()));
 			transactions.setMaterial(materialRepository.findByMaterialId(dto.getMaterialType()));
+			
 			transactions.setDriverCount(dto.getDriverCount());
 			transactions.setFirstWeight(dto.getFirstWeight());
 			transactions.setSecondWeight(dto.getSecondWeight());
-			transactions.setTotalWeight(dto.getTotalWeight());
-			BigDecimal materialPrice = dto.getMaterialPrice().multiply(dto.getTotalWeight());
-			transactions.setMaterialPrice(materialPrice);
-			transactions.setVat(dto.getVat());
-			transactions.setFinalAmount(dto.getFinalAmount());
-			if(Objects.nonNull(dto.getIsTransactionCompleted()) && 
-					dto.getIsTransactionCompleted()){
+			BigDecimal materialPrice = new BigDecimal(0);
+//			transactions.setTotalWeight(dto.getTotalWeight());
+//			BigDecimal materialPrice = dto.getMaterialPrice().multiply(dto.getTotalWeight());
+//			transactions.setFinalAmount(dto.getFinalAmount());
+			Material materialDB = materialRepository.findByMaterialId(dto.getMaterialType());
+			transactions.setBaleOrLoose(dto.getBaleOrLoose()); // B - Bale , L - Loose
+			
+			// if Transaction is completed, calculate weight & price else update Status
+			if(Objects.nonNull(dto.getIsTransactionCompleted()) && dto.getIsTransactionCompleted()) {
+					transactions.setTotalWeight(dto.getFirstWeight().subtract(dto.getSecondWeight()).abs());
+					if(dto.getTransferType().name().equals("INC")) {
+						transactions.setTransfer_type("INC");
+						materialPrice = dto.getBaleOrLoose().equals("B") ? 
+								materialDB.getMaterialIncBalePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()))
+							: materialDB.getMaterialIncLoosePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()));
+						
+					} else {
+						transactions.setTransfer_type("OUT");
+						materialPrice = dto.getBaleOrLoose().equals("B") ? 
+								materialDB.getMaterialOutBalePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()))
+							: materialDB.getMaterialOutLoosePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()));
+			
+					}
+				transactions.setMaterialPrice(materialPrice);
+				transactions.setVat(dto.getVat());
+				BigDecimal finalAmount = materialPrice.add(materialPrice.multiply(dto.getVat()).multiply(new BigDecimal(0.01)));
+				transactions.setFinalAmount(finalAmount);
 				transactions.setTransactionCompleted(true);
+				//transaction completed
 				transactions.setStatus(statusMasterRepository.findByStatusId(3));
+				if(dto.getId()!=0) {
+					transactions.setTransactionId(dto.getId());
+				}
 			} else {
 				if(Objects.nonNull(dto.getIsTransactionCancelled()) && 
 						dto.getIsTransactionCancelled()) {
+					//transaction cancelled
 					transactions.setStatus(statusMasterRepository.findByStatusId(2));
 					transactions.setCancelReason(dto.getCancelReason());
 				} else {
+					//transaction temporary; allowed for the second transaction
 					transactions.setStatus(statusMasterRepository.findByStatusId(1));
 				}
 				transactions.setTransactionCompleted(false);
@@ -105,6 +134,8 @@ public class TransactionserviceImpl implements TransactionService {
 				transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
 						transactionObj.getStatus().getStatusId() : 0);
 				transDto.setCancelReason(transactionObj.getCancelReason());
+				transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
+				transDto.setBaleOrLoose(transactionObj.getBaleOrLoose());
 				
 				transactionDtoList.add(transDto);
 			}
@@ -137,6 +168,8 @@ public class TransactionserviceImpl implements TransactionService {
 			transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
 					transactionObj.getStatus().getStatusId() : 0);
 			transDto.setCancelReason(transactionObj.getCancelReason());
+			transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
+			transDto.setBaleOrLoose(transactionObj.getBaleOrLoose());
 		} else {
 			throw new TransactionNotFoundException("Transaction Not Found ");
 		}
