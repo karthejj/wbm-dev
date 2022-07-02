@@ -1,6 +1,7 @@
 package com.example.WBMdemo.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.example.WBMdemo.entity.TransferType;
 
@@ -16,20 +17,21 @@ public class TransactionDto {
 	private String customerId;
 	private String vehicleNumber;
 	private int customerType;
-	private long materialType;
+//	private long materialType;
 	private int driverCount;
-	private BigDecimal firstWeight;
-	private BigDecimal secondWeight;
+	private List<ChildTransactionDto> childTransactionDtoList; 
+//	private BigDecimal firstWeight;
+//	private BigDecimal secondWeight;
 	private BigDecimal totalWeight;
-	private BigDecimal materialPrice;
-	private BigDecimal vat;
+//	private BigDecimal materialPrice;
+	private BigDecimal vatCost;
 	private BigDecimal finalAmount;
 	private Boolean isTransactionCompleted = false;
 	private Boolean isTransactionCancelled = false;
-	private int transactionStatus;
+	private String transactionStatus;
 	private String cancelReason;
 	private TransferType transferType;
-	private String baleOrLoose;
+
 	
 	
 }

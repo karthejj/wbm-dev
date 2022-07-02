@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Builder
-@Table(uniqueConstraints={@UniqueConstraint(columnNames={"MATERIAL_NAME"})})
+@Table(name = "MATERIAL", uniqueConstraints={@UniqueConstraint(columnNames={"MATERIAL_NAME"})})
 public class Material {
 
 	@Id

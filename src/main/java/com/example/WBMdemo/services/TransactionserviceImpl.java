@@ -1,6 +1,7 @@
 package com.example.WBMdemo.services;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.example.WBMdemo.dto.ChildTransactionDto;
 import com.example.WBMdemo.dto.TransactionDto;
+import com.example.WBMdemo.entity.ChildTransaction;
 import com.example.WBMdemo.entity.Material;
 import com.example.WBMdemo.entity.StatusMaster;
-import com.example.WBMdemo.entity.Transactions;
+import com.example.WBMdemo.entity.TransactionsHeader;
 import com.example.WBMdemo.entity.TransferType;
 import com.example.WBMdemo.errors.TransactionNotFoundException;
+import com.example.WBMdemo.repository.ChildTransactionRepository;
 import com.example.WBMdemo.repository.CustomerRepository;
 import com.example.WBMdemo.repository.MaterialRepository;
 import com.example.WBMdemo.repository.StatusMasterRepository;
@@ -27,6 +31,8 @@ public class TransactionserviceImpl implements TransactionService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
+	private ChildTransactionRepository childTransactionRepository;
+	@Autowired
 	private CustomerRepository customerRepository;
 	@Autowired
 	private MaterialRepository materialRepository; 
@@ -36,7 +42,8 @@ public class TransactionserviceImpl implements TransactionService {
 	@Override
 	public TransactionDto saveTransaction(TransactionDto dto) {
 		
-		Transactions transactions = new Transactions();
+		TransactionsHeader transactions = new TransactionsHeader();
+		ChildTransaction childTransaction = null;
 		StatusMaster status = new StatusMaster();
 		
 		if(Objects.nonNull(dto)) {
@@ -44,41 +51,88 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setCustomerId(dto.getCustomerId());
 			transactions.setVehicleNumber(dto.getVehicleNumber());
 			transactions.setCustomer(customerRepository.findByCustomerId(dto.getCustomerType()));
-			transactions.setMaterial(materialRepository.findByMaterialId(dto.getMaterialType()));
-			
 			transactions.setDriverCount(dto.getDriverCount());
-			transactions.setFirstWeight(dto.getFirstWeight());
-			transactions.setSecondWeight(dto.getSecondWeight());
-			BigDecimal materialPrice = new BigDecimal(0);
-//			transactions.setTotalWeight(dto.getTotalWeight());
-//			BigDecimal materialPrice = dto.getMaterialPrice().multiply(dto.getTotalWeight());
-//			transactions.setFinalAmount(dto.getFinalAmount());
-			Material materialDB = materialRepository.findByMaterialId(dto.getMaterialType());
-			transactions.setBaleOrLoose(dto.getBaleOrLoose()); // B - Bale , L - Loose
-			
+			if(dto.getTransferType().name().equals("INC")) {
+				transactions.setTransfer_type("INC");
+			} else {
+				transactions.setTransfer_type("OUT");
+			}
 			// if Transaction is completed, calculate weight & price else update Status
 			if(Objects.nonNull(dto.getIsTransactionCompleted()) && dto.getIsTransactionCompleted()) {
-					transactions.setTotalWeight(dto.getFirstWeight().subtract(dto.getSecondWeight()).abs());
-					if(dto.getTransferType().name().equals("INC")) {
-						transactions.setTransfer_type("INC");
-						materialPrice = dto.getBaleOrLoose().equals("B") ? 
-								materialDB.getMaterialIncBalePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()))
-							: materialDB.getMaterialIncLoosePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()));
-						
-					} else {
-						transactions.setTransfer_type("OUT");
-						materialPrice = dto.getBaleOrLoose().equals("B") ? 
-								materialDB.getMaterialOutBalePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()))
-							: materialDB.getMaterialOutLoosePrice().multiply(dto.getFirstWeight().subtract(dto.getSecondWeight()));
+				
+				List<ChildTransactionDto> transactionDetials = null;
 			
+				if(dto.getChildTransactionDtoList().size()!=0){
+					List<ChildTransaction> childTransactionList = new ArrayList<ChildTransaction>();
+					transactionDetials = new ArrayList<ChildTransactionDto>();	
+					for(ChildTransactionDto childTransactionDto : dto.getChildTransactionDtoList()) {
+						childTransaction = new ChildTransaction();
+						BigDecimal materialPriceWithoutVat = new BigDecimal(0);
+						Material materialDB = materialRepository.findByMaterialId(childTransactionDto.getMaterialType());
+						childTransaction.setBaleOrLoose(childTransactionDto.getBaleOrLoose()); //B or L
+						BigDecimal absoluteWeight = childTransactionDto.getFirstWeight().subtract(
+								childTransactionDto.getSecondWeight()).abs();
+						childTransaction.setMaterial(materialDB);
+						childTransaction.setMaterialFirstWeight(childTransactionDto.getFirstWeight());
+						childTransaction.setMaterialSecondWeight(childTransactionDto.getSecondWeight());
+						childTransaction.setMaterialAbsoluteWeight(absoluteWeight);
+						if(dto.getTransferType().name().equals("INC")) {
+							materialPriceWithoutVat = childTransactionDto.getBaleOrLoose().equals("B") ? 
+									materialDB.getMaterialIncBalePrice().multiply(absoluteWeight)
+								: materialDB.getMaterialIncLoosePrice().multiply(absoluteWeight);
+						} else {
+							materialPriceWithoutVat = childTransactionDto.getBaleOrLoose().equals("B") ? 
+									materialDB.getMaterialOutBalePrice().multiply(absoluteWeight)
+								: materialDB.getMaterialOutLoosePrice().multiply(absoluteWeight);
+						}
+						
+						childTransaction.setMaterialPrice(materialPriceWithoutVat);
+//						childTransaction.setMaterialPriceAfterVat(absoluteWeight.multiply(childTransactionDto.getVat()));
+						childTransaction.setMaterialPriceAfterVat(materialPriceWithoutVat.add(materialPriceWithoutVat.multiply(childTransactionDto.getVat()).divide(new BigDecimal(100))));
+						childTransaction.setVat(childTransactionDto.getVat());
+						childTransaction.setVatCost(childTransaction.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
+						childTransactionRepository.save(childTransaction);
+						childTransactionList.add(childTransaction);
+						
+
+						
+						ChildTransactionDto childTransactionDto1 = new ChildTransactionDto();
+						childTransactionDto1.setBaleOrLoose(childTransaction.getBaleOrLoose());
+						childTransactionDto1.setFirstWeight(childTransaction.getMaterialFirstWeight());
+						childTransactionDto1.setSecondWeight(childTransaction.getMaterialSecondWeight());
+						childTransactionDto1.setAbsoluteWeight(childTransaction.getMaterialAbsoluteWeight());
+						childTransactionDto1.setMaterialType(childTransaction.getMaterial().getMaterialId());
+						childTransactionDto1.setVat(childTransaction.getVat());
+						childTransactionDto1.setVatCost(childTransaction.getVatCost());
+						childTransactionDto1.setMaterialPricewithoutVat(childTransaction.getMaterialPrice());
+						childTransactionDto1.setMaterialPricewithVat(childTransaction.getMaterialPriceAfterVat());
+						transactionDetials.add(childTransactionDto1);
+						
 					}
-				transactions.setMaterialPrice(materialPrice);
-				transactions.setVat(dto.getVat());
-				BigDecimal finalAmount = materialPrice.add(materialPrice.multiply(dto.getVat()).multiply(new BigDecimal(0.01)));
-				transactions.setFinalAmount(finalAmount);
+					
+					dto.setChildTransactionDtoList(transactionDetials);
+
+					transactions.setTransactionDetials(childTransactionList);
+					transactions.setTotalWeight(new BigDecimal(
+							childTransactionList.stream().mapToDouble(o -> o.getMaterialAbsoluteWeight().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
+					transactions.setMaterialPrice(new BigDecimal(
+							childTransactionList.stream().mapToDouble(o -> o.getMaterialPrice().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
+					transactions.setFinalAmountWithVat(new BigDecimal(
+							childTransactionList.stream().mapToDouble(o -> o.getMaterialPriceAfterVat().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
+					transactions.setVatCost(transactions.getFinalAmountWithVat()
+							.subtract(transactions.getMaterialPrice()));
+					
+					dto.setTotalWeight(transactions.getTotalWeight());
+					dto.setVatCost(transactions.getVatCost());
+					dto.setFinalAmount(transactions.getFinalAmountWithVat());
+					
+				}
+				
 				transactions.setTransactionCompleted(true);
 				//transaction completed
-				transactions.setStatus(statusMasterRepository.findByStatusId(3));
+				status = statusMasterRepository.findByStatusId(1);
+				transactions.setStatus(status);
+				dto.setTransactionStatus(status.getStatusName());
 				if(dto.getId()!=0) {
 					transactions.setTransactionId(dto.getId());
 				}
@@ -88,14 +142,38 @@ public class TransactionserviceImpl implements TransactionService {
 					//transaction cancelled
 					transactions.setStatus(statusMasterRepository.findByStatusId(2));
 					transactions.setCancelReason(dto.getCancelReason());
-				} else {
-					//transaction temporary; allowed for the second transaction
-					transactions.setStatus(statusMasterRepository.findByStatusId(1));
+//				} else {
+//					//transaction temporary; allowed for the second transaction
+//					transactions.setStatus(statusMasterRepository.findByStatusId(1));
+					transactions.setTransactionCompleted(false);
 				}
-				transactions.setTransactionCompleted(false);
 			}
 		}
-		Transactions transObj = transactionRepository.save(transactions);
+		TransactionsHeader transObj = transactionRepository.save(transactions);
+		
+//		List<ChildTransactionDto> transactionDetials = null;
+//		List<ChildTransaction> transactionDetialsfromDB = null;
+//		if(transObj.getTransactionDetials().size()!=0) {
+//			transactionDetialsfromDB = transObj.getTransactionDetials();
+//			transactionDetials = new ArrayList<ChildTransactionDto>();
+//			for(ChildTransaction childtrans : transactionDetialsfromDB) {
+//				ChildTransactionDto childTransactionDto = new ChildTransactionDto();
+////				childTransactionDto.setBaleOrLoose(childtrans.getBaleOrLoose());
+////				childTransactionDto.setFirstWeight(childtrans.getMaterialFirstWeight());
+////				childTransactionDto.setSecondWeight(childtrans.getMaterialSecondWeight());
+//				childTransactionDto.setAbsoluteWeight(childtrans.getMaterialAbsoluteWeight());
+////				childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
+////				childTransactionDto.setVat(childtrans.getVat());
+//				childTransactionDto.setVatCost(childtrans.getVatCost());
+//				childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
+//				childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+//				transactionDetials.add(childTransactionDto);
+//			}
+//		}
+//		dto.setChildTransactionDtoList(transactionDetials);
+//		dto.setTotalWeight(null);
+//		dto.setVatCost(null);
+//		dto.setFinalAmount(null);
 		dto.setId(transObj.getTransactionId());
 		return dto;
 	}
@@ -103,7 +181,7 @@ public class TransactionserviceImpl implements TransactionService {
 	@Override
 	public List<TransactionDto> fetchTransactionList(String sortParam, int order) {
 		// TODO Auto-generated method stub
-		List<Transactions> transactionList = null;
+		List<TransactionsHeader> transactionList = null;
 		if(order==1) {
 			transactionList = 
 					transactionRepository.findAll(Sort.by(Sort.Direction.ASC, sortParam));
@@ -113,7 +191,7 @@ public class TransactionserviceImpl implements TransactionService {
 		}
 		List<TransactionDto> transactionDtoList = new ArrayList<TransactionDto>();
 		if(Objects.nonNull(transactionList.size()) && transactionList.size()>0) {
-			for(Transactions transactionObj : transactionList) {
+			for(TransactionsHeader transactionObj : transactionList) {
 				TransactionDto transDto = new TransactionDto();
 				transDto.setId(transactionObj.getTransactionId());
 				transDto.setCustomerId(transactionObj.getCustomerId());
@@ -121,22 +199,38 @@ public class TransactionserviceImpl implements TransactionService {
 				transDto.setCustomerType(transactionObj.getCustomer() != null ? 
 						transactionObj.getCustomer().getCustomerId() : 0);
 				transDto.setVehicleNumber(transactionObj.getVehicleNumber());
-				transDto.setMaterialType(transactionObj.getMaterial() != null ? 
-						transactionObj.getMaterial().getMaterialId() : 0);
 				transDto.setDriverCount(transactionObj.getDriverCount());
-				transDto.setFirstWeight(transactionObj.getFirstWeight());
-				transDto.setSecondWeight(transactionObj.getSecondWeight());
+				transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
+				
+				List<ChildTransactionDto> transactionDetials = null;
+				List<ChildTransaction> transactionDetialsfromDB = null;
+				if(transactionObj.getTransactionDetials().size()!=0) {
+					transactionDetialsfromDB = transactionObj.getTransactionDetials();
+					transactionDetials = new ArrayList<ChildTransactionDto>();
+					for(ChildTransaction childtrans : transactionDetialsfromDB) {
+						ChildTransactionDto childTransactionDto = new ChildTransactionDto();
+						childTransactionDto.setBaleOrLoose(childtrans.getBaleOrLoose());
+						childTransactionDto.setFirstWeight(childtrans.getMaterialFirstWeight());
+						childTransactionDto.setSecondWeight(childtrans.getMaterialSecondWeight());
+						childTransactionDto.setAbsoluteWeight(childtrans.getMaterialAbsoluteWeight());
+						childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
+						childTransactionDto.setVat(childtrans.getVat());
+						childTransactionDto.setVatCost(childtrans.getVatCost());
+						childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
+						childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+						transactionDetials.add(childTransactionDto);
+					}
+				}
+				
 				transDto.setTotalWeight(transactionObj.getTotalWeight());
-				transDto.setMaterialPrice(transactionObj.getMaterialPrice());
-				transDto.setVat(transactionObj.getVat());
-				transDto.setFinalAmount(transactionObj.getFinalAmount());
+				transDto.setVatCost(transactionObj.getVatCost());
+				transDto.setFinalAmount(transactionObj.getFinalAmountWithVat());
+				
+				transDto.setChildTransactionDtoList(transactionDetials);
 				transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
 				transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
-						transactionObj.getStatus().getStatusId() : 0);
+						transactionObj.getStatus().getStatusName() : "");
 				transDto.setCancelReason(transactionObj.getCancelReason());
-				transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
-				transDto.setBaleOrLoose(transactionObj.getBaleOrLoose());
-				
 				transactionDtoList.add(transDto);
 			}
 			return transactionDtoList;
@@ -147,7 +241,7 @@ public class TransactionserviceImpl implements TransactionService {
 	
 	public TransactionDto getTransactionById(long transactionId) throws TransactionNotFoundException {
 		TransactionDto transDto = new TransactionDto();
-		Transactions transactionObj = transactionRepository.findById(transactionId).get(); 
+		TransactionsHeader transactionObj = transactionRepository.findById(transactionId).get(); 
 		if(transactionObj!=null) {
 			transDto.setId(transactionObj.getTransactionId());
 			transDto.setCustomerId(transactionObj.getCustomerId());
@@ -155,21 +249,39 @@ public class TransactionserviceImpl implements TransactionService {
 			transDto.setCustomerType(transactionObj.getCustomer() != null ? 
 					transactionObj.getCustomer().getCustomerId() : 0);
 			transDto.setVehicleNumber(transactionObj.getVehicleNumber());
-			transDto.setMaterialType(transactionObj.getMaterial() != null ? 
-					transactionObj.getMaterial().getMaterialId() : 0);
 			transDto.setDriverCount(transactionObj.getDriverCount());
-			transDto.setFirstWeight(transactionObj.getFirstWeight());
-			transDto.setSecondWeight(transactionObj.getSecondWeight());
+			
+			List<ChildTransactionDto> transactionDetials = null;
+			List<ChildTransaction> transactionDetialsfromDB = null;
+			if(transactionObj.getTransactionDetials().size()!=0) {
+				transactionDetialsfromDB = transactionObj.getTransactionDetials();
+				transactionDetials = new ArrayList<ChildTransactionDto>();
+				for(ChildTransaction childtrans : transactionDetialsfromDB) {
+					ChildTransactionDto childTransactionDto = new ChildTransactionDto();
+					childTransactionDto.setBaleOrLoose(childtrans.getBaleOrLoose());
+					childTransactionDto.setFirstWeight(childtrans.getMaterialFirstWeight());
+					childTransactionDto.setSecondWeight(childtrans.getMaterialSecondWeight());
+					childTransactionDto.setAbsoluteWeight(childtrans.getMaterialAbsoluteWeight());
+					childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
+					childTransactionDto.setVat(childtrans.getVat());
+					childTransactionDto.setVatCost(childtrans.getVatCost());
+					childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
+					childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+					transactionDetials.add(childTransactionDto);
+				}
+			}
+			
 			transDto.setTotalWeight(transactionObj.getTotalWeight());
-			transDto.setMaterialPrice(transactionObj.getMaterialPrice());
-			transDto.setVat(transactionObj.getVat());
-			transDto.setFinalAmount(transactionObj.getFinalAmount());
+			transDto.setVatCost(transactionObj.getVatCost());
+			transDto.setFinalAmount(transactionObj.getFinalAmountWithVat());
+			
+			transDto.setChildTransactionDtoList(transactionDetials);
 			transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
 			transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
-					transactionObj.getStatus().getStatusId() : 0);
+					transactionObj.getStatus().getStatusName() : "");
 			transDto.setCancelReason(transactionObj.getCancelReason());
 			transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
-			transDto.setBaleOrLoose(transactionObj.getBaleOrLoose());
+
 		} else {
 			throw new TransactionNotFoundException("Transaction Not Found ");
 		}

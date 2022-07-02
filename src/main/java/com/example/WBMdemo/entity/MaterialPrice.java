@@ -6,13 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class MaterialPrice {
 
-	private TransferType type;
-	private BigDecimal bale;
-	private BigDecimal loose;
+//	private TransferType type;
+//	private BigDecimal bale;
+//	private BigDecimal loose;
 
 }

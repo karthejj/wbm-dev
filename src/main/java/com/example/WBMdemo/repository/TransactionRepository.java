@@ -2,9 +2,9 @@ package com.example.WBMdemo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.WBMdemo.entity.Transactions;
+import com.example.WBMdemo.entity.TransactionsHeader;
 
-public interface TransactionRepository extends JpaRepository<Transactions, Long> {
+public interface TransactionRepository extends JpaRepository<TransactionsHeader, Long> {
 
-	public Transactions findByTransactionId(long transactionId);
+	public TransactionsHeader findByTransactionId(long transactionId);
 }

@@ -11,7 +11,7 @@ public class MaterialDTO {
 
 	private Long materialId;
 	private String materialName;
-	private MaterialPrice materialINC;
-	private MaterialPrice materialOUT;
+	private MaterialPriceDto materialINC;
+	private MaterialPriceDto materialOUT;
 	private BigDecimal materialWeight;
 }

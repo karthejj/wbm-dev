@@ -1,6 +1,8 @@
 package com.example.WBMdemo.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -24,9 +27,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "TRANSACTIONS_HEADER")
 @Data
 @Builder
-public class Transactions {
+public class TransactionsHeader {
 	
 	@Id
 	@SequenceGenerator(name="transactions-seq-gen",sequenceName="TRANSACTIONS_SEQ_GEN", initialValue=1, allocationSize=1)
@@ -48,18 +52,21 @@ public class Transactions {
 	@JoinColumn(name = "CUSTOMER_TYPE_ID")
 	private Customer customer;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "MATERIAL_ID")
-	private Material material;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "MATERIAL_ID")
+//	private Material material;
 	
 	@Column(name = "DRIVER_COUNT")
 	private Integer driverCount;
 
-	@Column(name = "FIRST_WEIGHT")
-	private BigDecimal firstWeight;
+//	@Column(name = "FIRST_WEIGHT")
+//	private BigDecimal firstWeight;
+//	
+//	@Column(name = "SECOND_WEIGHT")
+//	private BigDecimal secondWeight;
 	
-	@Column(name = "SECOND_WEIGHT")
-	private BigDecimal secondWeight;
+	@OneToMany(fetch = FetchType.LAZY)
+	private List<ChildTransaction> transactionDetials = new ArrayList<ChildTransaction>();
 
 	@Column(name = "TOTAL_WEIGHT")
 	private BigDecimal totalWeight;
@@ -68,10 +75,10 @@ public class Transactions {
 	private BigDecimal materialPrice;
 	
 	@Column(name = "VAT")
-	private BigDecimal vat;
+	private BigDecimal vatCost;
 	
 	@Column(name = "FINAL_AMOUNT")
-	private BigDecimal finalAmount;
+	private BigDecimal finalAmountWithVat;
 	
 	@Column(name = "TRANSACTION_COMPLETED")
 	private Boolean transactionCompleted;
@@ -86,8 +93,8 @@ public class Transactions {
 	@Column(name = "TRANSFER_TYPE")
 	private String transfer_type;
 	
-	@Column(name = "BALE_LOOSE")
-	private String baleOrLoose;
+//	@Column(name = "BALE_LOOSE")
+//	private String baleOrLoose;
 	
 	
 }
