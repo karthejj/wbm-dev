@@ -21,7 +21,10 @@ public class MaterialServiceImpl implements MaterialService {
 	@Override
 	public Material saveMaterial(MaterialDTO material) throws DuplicateMaterialException {
 		// TODO Auto-generated method stub
-		Material materialDB = materialRepository.findByMaterialId(material.getMaterialId());
+		Material materialDB = null;
+		if(material.getMaterialId()!=null) {
+			materialDB = materialRepository.findByMaterialId(material.getMaterialId());
+		}
 		if(Objects.nonNull(materialDB)) {
 			if(Objects.nonNull(material.getMaterialINC())) {
 				materialDB.setMaterialIncBalePrice(material.getMaterialINC().getBale());
@@ -34,6 +37,7 @@ public class MaterialServiceImpl implements MaterialService {
 			return materialRepository.save(materialDB);
 		} else {
 			Material materialNew = new Material();
+			materialNew.setMaterialName(material.getMaterialName());
 			if(Objects.nonNull(material.getMaterialINC())) {
 				materialNew.setMaterialIncBalePrice(material.getMaterialINC().getBale());
 				materialNew.setMaterialIncLoosePrice(material.getMaterialINC().getLoose());
@@ -50,12 +54,17 @@ public class MaterialServiceImpl implements MaterialService {
 	public List<Material> fetchMaterialList(String sortParam, int order) {
 		// TODO Auto-generated method stub
 		List<Material> materialList = null;
-		if(order==1) {
-			materialList = 
-					materialRepository.findAll(Sort.by(Sort.Direction.ASC, sortParam));
+		if(sortParam!=null && order!=0) {
+			if(order==1) {
+				materialList = 
+						materialRepository.findAll(Sort.by(Sort.Direction.ASC, sortParam));
+			} else {
+				materialList = 
+						materialRepository.findAll(Sort.by(Sort.Direction.DESC, sortParam));
+			}
 		} else {
 			materialList = 
-					materialRepository.findAll(Sort.by(Sort.Direction.DESC, sortParam));
+					materialRepository.findAll(Sort.by(Sort.Direction.ASC));
 		}
 		return materialList;
 	}
