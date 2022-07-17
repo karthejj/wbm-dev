@@ -98,9 +98,9 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionList.add(childTransaction);
 						
 						ChildTransactionDto childTransactionDto1 = new ChildTransactionDto();
-//						childTransactionDto1.setBaleOrLoose(childTransaction.getBaleOrLoose());
-//						childTransactionDto1.setFirstWeight(childTransaction.getMaterialFirstWeight());
-//						childTransactionDto1.setSecondWeight(childTransaction.getMaterialSecondWeight());
+						childTransactionDto1.setBaleOrLoose(childTransaction.getBaleOrLoose());
+						childTransactionDto1.setFirstWeight(childTransaction.getMaterialFirstWeight());
+						childTransactionDto1.setSecondWeight(childTransaction.getMaterialSecondWeight());
 						childTransactionDto1.setAbsoluteWeight(childTransaction.getMaterialAbsoluteWeight());
 						childTransactionDto1.setMaterialType(childTransaction.getMaterial().getMaterialId());
 						childTransactionDto1.setVat(childTransaction.getVat());
@@ -127,7 +127,7 @@ public class TransactionserviceImpl implements TransactionService {
 					dto.setFinalAmount(transactions.getFinalAmountWithVat());
 					
 				}
-				transactions.setModifiedDate(LocalDateTime.now());
+				transactions.setModifiedDate(LocalDate.now());
 				transactions.setTransactionCompleted(true);
 				//transaction completed
 				status = statusMasterRepository.findByStatusId(1);
@@ -143,7 +143,7 @@ public class TransactionserviceImpl implements TransactionService {
 					//transaction cancelled
 					transactions.setStatus(statusMasterRepository.findByStatusId(2));
 					transactions.setCancelReason(dto.getCancelReason());
-					transactions.setModifiedDate(LocalDateTime.now());
+					transactions.setModifiedDate(LocalDate.now());
 					transactions.setTransactionCompleted(true);
 				} else { //temporary transaction
 					if(dto.getChildTransactionDtoList().size()!=0){
@@ -159,7 +159,7 @@ public class TransactionserviceImpl implements TransactionService {
 						}
 						transactions.setTransactionDetials(childTransactionList);
 					}
-					transactions.setCreatedDate(LocalDateTime.now());
+					transactions.setCreatedDate(LocalDate.now());
 					transactions.setTransactionCompleted(false);
 					status = statusMasterRepository.findByStatusId(3); 					//transaction temporary
 					transactions.setStatus(status);
@@ -209,8 +209,9 @@ public class TransactionserviceImpl implements TransactionService {
 
 	@Override
 	public List<TransactionDto> fetchTemporaryTransactionList(){
+		StatusMaster status = new StatusMaster(3, "TEMPORARY");
 		List<TransactionsHeader> transactionList  = 
-				transactionRepository.findByStatus(new StatusMaster(3, "TEMPORARY"), LocalDate.now());
+				transactionRepository.findByStatusAndCreatedDate(status, LocalDate.now());
 		List<TransactionsHeader> sortedUsers = transactionList.stream()
 				  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
 				  .collect(Collectors.toList());

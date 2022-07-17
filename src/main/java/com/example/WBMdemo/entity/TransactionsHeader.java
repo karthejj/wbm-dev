@@ -99,9 +99,9 @@ public class TransactionsHeader {
 //	private String baleOrLoose;
 	
 	@Column(name="CREATED_DATE")
-	private LocalDateTime createdDate;
+	private LocalDate createdDate;
 	
 	@Column(name="MODIFIED_DATE")
-	private LocalDateTime modifiedDate;
+	private LocalDate modifiedDate;
 	
 }

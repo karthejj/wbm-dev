@@ -15,16 +15,19 @@ public interface TransactionRepository extends JpaRepository<TransactionsHeader,
 
 	public TransactionsHeader findByTransactionId(long transactionId);
 
-	@Query(value = " from TransactionsHeader th "
-			+ "where DATE(th.createdDate) =:createdDate ", nativeQuery = true)  
-	public List<TransactionsHeader> findByCreatedDate(@Param("createdDate") LocalDate createdDate);
+//	@Query(value = " from TransactionsHeader th "
+//			+ "where DATE(th.createdDate) =:createdDate ", nativeQuery = true)  
+//	public List<TransactionsHeader> findByCreatedDate(@Param("createdDate") LocalDate createdDate);
+//	
+//	@Query(value = " from TransactionsHeader th "
+//			+ "where th.status = :status " 
+//			+" and DATE(th.createdDate) =:createdDate ", nativeQuery = true)  
+//	public List<TransactionsHeader> findByStatus(@Param("status") StatusMaster status, 
+//			@Param("createdDate") LocalDate createdDate);
 	
-	@Query(value = " from TransactionsHeader th "
-			+ "where th.status = :status " 
-			+" and DATE(th.createdDate) =:createdDate ", nativeQuery = true)  
-	public List<TransactionsHeader> findByStatus(@Param("status") StatusMaster status, 
-			@Param("createdDate") LocalDate createdDate);
+	public List<TransactionsHeader> findByCreatedDate(LocalDate createdDate);
 	
-	
+	public List<TransactionsHeader> findByStatusAndCreatedDate(StatusMaster status, 
+			LocalDate createdDate);
 	
 }
