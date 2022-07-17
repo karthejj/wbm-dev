@@ -45,4 +45,16 @@ public class TransactionController {
 		LOGGER.debug("Inside fetchVehicleList method of TransactionController ");
 		return transactionService.fetchTransactionList(sortParam, order);
 	}
+
+	@GetMapping("/transaction/currentDayTransactionList")
+	public  List<TransactionDto> fetchCurrentDayTransactionList(){
+		LOGGER.debug("Inside fetchCurrentDayTransactionList method of TransactionController ");
+		return transactionService.fetchCurrentDayTransactionList();
+	}
+
+	@GetMapping("/transaction/temporaryTransactionList")
+	public  List<TransactionDto> fetchTemporaryTransactionList(){
+		LOGGER.debug("Inside fetchCurrentDayTransactionList method of TransactionController ");
+		return transactionService.fetchTemporaryTransactionList();
+	}
 }

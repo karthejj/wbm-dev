@@ -2,9 +2,13 @@ package com.example.WBMdemo.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -85,7 +89,6 @@ public class TransactionserviceImpl implements TransactionService {
 									materialDB.getMaterialOutBalePrice().multiply(absoluteWeight)
 								: materialDB.getMaterialOutLoosePrice().multiply(absoluteWeight);
 						}
-						
 						childTransaction.setMaterialPrice(materialPriceWithoutVat);
 //						childTransaction.setMaterialPriceAfterVat(absoluteWeight.multiply(childTransactionDto.getVat()));
 						childTransaction.setMaterialPriceAfterVat(materialPriceWithoutVat.add(materialPriceWithoutVat.multiply(childTransactionDto.getVat()).divide(new BigDecimal(100))));
@@ -94,12 +97,10 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionRepository.save(childTransaction);
 						childTransactionList.add(childTransaction);
 						
-
-						
 						ChildTransactionDto childTransactionDto1 = new ChildTransactionDto();
-						childTransactionDto1.setBaleOrLoose(childTransaction.getBaleOrLoose());
-						childTransactionDto1.setFirstWeight(childTransaction.getMaterialFirstWeight());
-						childTransactionDto1.setSecondWeight(childTransaction.getMaterialSecondWeight());
+//						childTransactionDto1.setBaleOrLoose(childTransaction.getBaleOrLoose());
+//						childTransactionDto1.setFirstWeight(childTransaction.getMaterialFirstWeight());
+//						childTransactionDto1.setSecondWeight(childTransaction.getMaterialSecondWeight());
 						childTransactionDto1.setAbsoluteWeight(childTransaction.getMaterialAbsoluteWeight());
 						childTransactionDto1.setMaterialType(childTransaction.getMaterial().getMaterialId());
 						childTransactionDto1.setVat(childTransaction.getVat());
@@ -107,7 +108,6 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionDto1.setMaterialPricewithoutVat(childTransaction.getMaterialPrice());
 						childTransactionDto1.setMaterialPricewithVat(childTransaction.getMaterialPriceAfterVat());
 						transactionDetials.add(childTransactionDto1);
-						
 					}
 					
 					dto.setChildTransactionDtoList(transactionDetials);
@@ -127,7 +127,7 @@ public class TransactionserviceImpl implements TransactionService {
 					dto.setFinalAmount(transactions.getFinalAmountWithVat());
 					
 				}
-				
+				transactions.setModifiedDate(LocalDateTime.now());
 				transactions.setTransactionCompleted(true);
 				//transaction completed
 				status = statusMasterRepository.findByStatusId(1);
@@ -137,43 +137,40 @@ public class TransactionserviceImpl implements TransactionService {
 					transactions.setTransactionId(dto.getId());
 				}
 			} else {
-				if(Objects.nonNull(dto.getIsTransactionCancelled()) && 
-						dto.getIsTransactionCancelled()) {
+				dto.setIsTransactionCancelled((dto.getCancelReason()!=null && dto.getCancelReason()!="")?
+						true : false);
+				if(dto.getIsTransactionCancelled()) {
 					//transaction cancelled
 					transactions.setStatus(statusMasterRepository.findByStatusId(2));
 					transactions.setCancelReason(dto.getCancelReason());
-//				} else {
-//					//transaction temporary; allowed for the second transaction
-//					transactions.setStatus(statusMasterRepository.findByStatusId(1));
+					transactions.setModifiedDate(LocalDateTime.now());
+					transactions.setTransactionCompleted(true);
+				} else { //temporary transaction
+					if(dto.getChildTransactionDtoList().size()!=0){
+						List<ChildTransaction> childTransactionList = new ArrayList<ChildTransaction>();
+						for(ChildTransactionDto childTransactionDto : dto.getChildTransactionDtoList()) {
+							childTransaction = new ChildTransaction();
+							Material materialDB = materialRepository.findByMaterialId(childTransactionDto.getMaterialType());
+							childTransaction.setMaterial(materialDB);
+							childTransaction.setBaleOrLoose(childTransactionDto.getBaleOrLoose()); //B or L
+							childTransaction.setMaterialFirstWeight(childTransactionDto.getFirstWeight());
+							childTransactionRepository.save(childTransaction);
+							childTransactionList.add(childTransaction);
+						}
+						transactions.setTransactionDetials(childTransactionList);
+					}
+					transactions.setCreatedDate(LocalDateTime.now());
 					transactions.setTransactionCompleted(false);
+					status = statusMasterRepository.findByStatusId(3); 					//transaction temporary
+					transactions.setStatus(status);
+					dto.setTransactionStatus(status.getStatusName());
+					if(dto.getId()!=0) {
+						transactions.setTransactionId(dto.getId());
+					}
 				}
 			}
 		}
 		TransactionsHeader transObj = transactionRepository.save(transactions);
-		
-//		List<ChildTransactionDto> transactionDetials = null;
-//		List<ChildTransaction> transactionDetialsfromDB = null;
-//		if(transObj.getTransactionDetials().size()!=0) {
-//			transactionDetialsfromDB = transObj.getTransactionDetials();
-//			transactionDetials = new ArrayList<ChildTransactionDto>();
-//			for(ChildTransaction childtrans : transactionDetialsfromDB) {
-//				ChildTransactionDto childTransactionDto = new ChildTransactionDto();
-////				childTransactionDto.setBaleOrLoose(childtrans.getBaleOrLoose());
-////				childTransactionDto.setFirstWeight(childtrans.getMaterialFirstWeight());
-////				childTransactionDto.setSecondWeight(childtrans.getMaterialSecondWeight());
-//				childTransactionDto.setAbsoluteWeight(childtrans.getMaterialAbsoluteWeight());
-////				childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
-////				childTransactionDto.setVat(childtrans.getVat());
-//				childTransactionDto.setVatCost(childtrans.getVatCost());
-//				childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
-//				childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
-//				transactionDetials.add(childTransactionDto);
-//			}
-//		}
-//		dto.setChildTransactionDtoList(transactionDetials);
-//		dto.setTotalWeight(null);
-//		dto.setVatCost(null);
-//		dto.setFinalAmount(null);
 		dto.setId(transObj.getTransactionId());
 		return dto;
 	}
@@ -182,16 +179,49 @@ public class TransactionserviceImpl implements TransactionService {
 	public List<TransactionDto> fetchTransactionList(String sortParam, int order) {
 		// TODO Auto-generated method stub
 		List<TransactionsHeader> transactionList = null;
-		if(order==1) {
-			transactionList = 
-					transactionRepository.findAll(Sort.by(Sort.Direction.ASC, sortParam));
+		if(sortParam!=null && order!=0) {
+			if(order==1) {
+				transactionList = 
+						transactionRepository.findAll(Sort.by(Sort.Direction.ASC, sortParam));
+			} else {
+				transactionList = 
+						transactionRepository.findAll(Sort.by(Sort.Direction.DESC, sortParam));
+			}
 		} else {
 			transactionList = 
-					transactionRepository.findAll(Sort.by(Sort.Direction.DESC, sortParam));
+					transactionRepository.findAll(Sort.by(Sort.Direction.ASC));
 		}
+		
+		return transactionByField(transactionList);
+	}
+	
+	@Override
+	public List<TransactionDto> fetchCurrentDayTransactionList() {
+		// TODO Auto-generated method stub
+		List<TransactionsHeader> transactionList  = 
+						transactionRepository.findByCreatedDate(LocalDate.now());
+				List<TransactionsHeader> sortedUsers = transactionList.stream()
+						  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
+						  .collect(Collectors.toList());
+		
+		return transactionByField(sortedUsers);
+	}
+
+	@Override
+	public List<TransactionDto> fetchTemporaryTransactionList(){
+		List<TransactionsHeader> transactionList  = 
+				transactionRepository.findByStatus(new StatusMaster(3, "TEMPORARY"), LocalDate.now());
+		List<TransactionsHeader> sortedUsers = transactionList.stream()
+				  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
+				  .collect(Collectors.toList());
+
+		return transactionByField(sortedUsers);
+	}
+	
+	private List<TransactionDto> transactionByField(List<TransactionsHeader> sortedUsers) {
 		List<TransactionDto> transactionDtoList = new ArrayList<TransactionDto>();
-		if(Objects.nonNull(transactionList.size()) && transactionList.size()>0) {
-			for(TransactionsHeader transactionObj : transactionList) {
+		if(Objects.nonNull(sortedUsers.size()) && sortedUsers.size()>0) {
+			for(TransactionsHeader transactionObj : sortedUsers) {
 				TransactionDto transDto = new TransactionDto();
 				transDto.setId(transactionObj.getTransactionId());
 				transDto.setCustomerId(transactionObj.getCustomerId());

@@ -46,4 +46,7 @@ public class Material {
 	@Column(name = "MATERIAL_OUT_LOOSE_PRICE")
 	private BigDecimal materialOutLoosePrice;
 	
+	@Column(name = "VAT")
+	private BigDecimal vat;
+	
 }

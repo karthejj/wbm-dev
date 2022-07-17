@@ -26,6 +26,7 @@ public class MaterialServiceImpl implements MaterialService {
 			materialDB = materialRepository.findByMaterialId(material.getMaterialId());
 		}
 		if(Objects.nonNull(materialDB)) {
+			materialDB.setMaterialName(material.getMaterialName());
 			if(Objects.nonNull(material.getMaterialINC())) {
 				materialDB.setMaterialIncBalePrice(material.getMaterialINC().getBale());
 				materialDB.setMaterialIncLoosePrice(material.getMaterialINC().getLoose());
@@ -34,6 +35,7 @@ public class MaterialServiceImpl implements MaterialService {
 				materialDB.setMaterialOutBalePrice(material.getMaterialOUT().getBale());
 				materialDB.setMaterialOutLoosePrice(material.getMaterialOUT().getLoose());
 			}
+			materialDB.setVat(material.getVat());
 			return materialRepository.save(materialDB);
 		} else {
 			Material materialNew = new Material();
@@ -46,6 +48,7 @@ public class MaterialServiceImpl implements MaterialService {
 				materialNew.setMaterialOutBalePrice(material.getMaterialOUT().getBale());
 				materialNew.setMaterialOutLoosePrice(material.getMaterialOUT().getLoose());
 			}
+			materialNew.setVat(material.getVat());
 			return materialRepository.save(materialNew);
 		}
 	}

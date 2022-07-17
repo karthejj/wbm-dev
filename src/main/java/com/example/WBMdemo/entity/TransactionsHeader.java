@@ -1,6 +1,8 @@
 package com.example.WBMdemo.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,5 +98,10 @@ public class TransactionsHeader {
 //	@Column(name = "BALE_LOOSE")
 //	private String baleOrLoose;
 	
+	@Column(name="CREATED_DATE")
+	private LocalDateTime createdDate;
+	
+	@Column(name="MODIFIED_DATE")
+	private LocalDateTime modifiedDate;
 	
 }
