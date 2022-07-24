@@ -56,6 +56,7 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setVehicleNumber(dto.getVehicleNumber());
 			transactions.setCustomer(customerRepository.findByCustomerId(dto.getCustomerType()));
 			transactions.setDriverCount(dto.getDriverCount());
+			transactions.setPhoneNumber(dto.getPhoneNumber());
 			if(dto.getTransferType().name().equals("INC")) {
 				transactions.setTransfer_type("INC");
 			} else {
@@ -231,6 +232,7 @@ public class TransactionserviceImpl implements TransactionService {
 						transactionObj.getCustomer().getCustomerId() : 0);
 				transDto.setVehicleNumber(transactionObj.getVehicleNumber());
 				transDto.setDriverCount(transactionObj.getDriverCount());
+				transDto.setPhoneNumber(transactionObj.getPhoneNumber());
 				transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
 				
 				List<ChildTransactionDto> transactionDetials = null;
@@ -281,7 +283,7 @@ public class TransactionserviceImpl implements TransactionService {
 					transactionObj.getCustomer().getCustomerId() : 0);
 			transDto.setVehicleNumber(transactionObj.getVehicleNumber());
 			transDto.setDriverCount(transactionObj.getDriverCount());
-			
+			transDto.setPhoneNumber(transactionObj.getPhoneNumber());
 			List<ChildTransactionDto> transactionDetials = null;
 			List<ChildTransaction> transactionDetialsfromDB = null;
 			if(transactionObj.getTransactionDetials().size()!=0) {

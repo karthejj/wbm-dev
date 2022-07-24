@@ -31,7 +31,7 @@ public class TransactionDto {
 	private String transactionStatus;
 	private String cancelReason;
 	private TransferType transferType;
-
+	private String phoneNumber;
 	
 	
 }

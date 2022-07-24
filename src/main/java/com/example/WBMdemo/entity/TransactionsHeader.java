@@ -104,4 +104,6 @@ public class TransactionsHeader {
 	@Column(name="MODIFIED_DATE")
 	private LocalDate modifiedDate;
 	
+	@Column(name = "PHONE_NUMBER")
+	private String phoneNumber;
 }
