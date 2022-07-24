@@ -46,11 +46,16 @@ public class TransactionserviceImpl implements TransactionService {
 	@Override
 	public TransactionDto saveTransaction(TransactionDto dto) {
 		
-		TransactionsHeader transactions = new TransactionsHeader();
+		TransactionsHeader transactions=null;
 		ChildTransaction childTransaction = null;
 		StatusMaster status = new StatusMaster();
 		
 		if(Objects.nonNull(dto)) {
+			if(dto.getId()!=0) {
+				transactions = transactionRepository.findByTransactionId(dto.getId());
+			}else {
+				transactions = new TransactionsHeader();
+			}
 			transactions.setCustomerName(dto.getCustomerName());
 			transactions.setCustomerId(dto.getCustomerId());
 			transactions.setVehicleNumber(dto.getVehicleNumber());
