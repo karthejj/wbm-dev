@@ -32,6 +32,7 @@ public class TransactionDto {
 	private String cancelReason;
 	private TransferType transferType;
 	private String phoneNumber;
+	private Boolean includeVat;
 	
 	
 }

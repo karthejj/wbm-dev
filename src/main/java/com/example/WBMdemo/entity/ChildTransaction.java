@@ -60,4 +60,8 @@ public class ChildTransaction {
 	@Column(name = "MATERIAL_PRICE_AFTER_VAT")
 	private BigDecimal materialPriceAfterVat;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="TRANSACTION_HEADER_ID")
+	private TransactionsHeader transactionsHeader;
+	
 }

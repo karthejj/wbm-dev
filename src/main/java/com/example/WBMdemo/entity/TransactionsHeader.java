@@ -106,4 +106,7 @@ public class TransactionsHeader {
 	
 	@Column(name = "PHONE_NUMBER")
 	private String phoneNumber;
+	
+	@Column(name = "VAT_INCLUDED")
+	private Boolean vatIncluded=true;
 }
