@@ -3,6 +3,9 @@ package com.example.WBMdemo.services;
 import java.util.List;
 import java.util.Objects;
 
+import com.example.WBMdemo.controllers.MaterialController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,12 +18,16 @@ import com.example.WBMdemo.repository.MaterialRepository;
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
+	private final Logger LOGGER = LoggerFactory.getLogger(MaterialController.class);
+
 	@Autowired
 	private MaterialRepository materialRepository;
 	
 	@Override
 	public Material saveMaterial(MaterialDTO material) throws DuplicateMaterialException {
 		// TODO Auto-generated method stub
+
+
 		Material materialDB = null;
 		if(material.getMaterialId()!=null) {
 			materialDB = materialRepository.findByMaterialId(material.getMaterialId());
@@ -54,6 +61,9 @@ public class MaterialServiceImpl implements MaterialService {
 			Material materialNew = new Material();
 //			Material materialDuplicate = materialRepository.findByMaterialName(material.getMaterialName());
 			materialNew.setMaterialName(material.getMaterialName());
+			System.out.println(material.getMaterialIncBalePrice());
+
+
 			if(Objects.nonNull(material.getMaterialIncBalePrice())) {
 				materialNew.setMaterialIncBalePrice(material.getMaterialIncBalePrice());
 			}
@@ -66,6 +76,7 @@ public class MaterialServiceImpl implements MaterialService {
 			if(Objects.nonNull(material.getMaterialOutLoosePrice())) {
 				materialNew.setMaterialOutLoosePrice(material.getMaterialOutLoosePrice());
 			}
+
 			materialNew.setVat(material.getVat());
 			return materialRepository.save(materialNew);
 		}
