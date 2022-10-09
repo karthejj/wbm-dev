@@ -54,13 +54,17 @@ public class MaterialServiceImpl implements MaterialService {
 			Material materialNew = new Material();
 //			Material materialDuplicate = materialRepository.findByMaterialName(material.getMaterialName());
 			materialNew.setMaterialName(material.getMaterialName());
-			if(Objects.nonNull(material.getMaterialINC())) {
-				materialNew.setMaterialIncBalePrice(material.getMaterialINC().getBale());
-				materialNew.setMaterialIncLoosePrice(material.getMaterialINC().getLoose());
+			if(Objects.nonNull(material.getMaterialIncBalePrice())) {
+				materialNew.setMaterialIncBalePrice(material.getMaterialIncBalePrice());
 			}
-			if(Objects.nonNull(material.getMaterialOUT())) {
-				materialNew.setMaterialOutBalePrice(material.getMaterialOUT().getBale());
-				materialNew.setMaterialOutLoosePrice(material.getMaterialOUT().getLoose());
+			if(Objects.nonNull(material.getMaterialIncLoosePrice())) {
+				materialNew.setMaterialIncLoosePrice(material.getMaterialIncLoosePrice());
+			}
+			if(Objects.nonNull(material.getMaterialOutBalePrice())) {
+				materialNew.setMaterialOutBalePrice(material.getMaterialOutBalePrice());
+			}
+			if(Objects.nonNull(material.getMaterialOutLoosePrice())) {
+				materialNew.setMaterialOutLoosePrice(material.getMaterialOutLoosePrice());
 			}
 			materialNew.setVat(material.getVat());
 			return materialRepository.save(materialNew);
