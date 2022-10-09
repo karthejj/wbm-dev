@@ -27,14 +27,27 @@ public class MaterialServiceImpl implements MaterialService {
 		}
 		if(Objects.nonNull(materialDB)) {
 			materialDB.setMaterialName(material.getMaterialName());
-			if(Objects.nonNull(material.getMaterialINC())) {
-				materialDB.setMaterialIncBalePrice(material.getMaterialINC().getBale());
-				materialDB.setMaterialIncLoosePrice(material.getMaterialINC().getLoose());
+			if(Objects.nonNull(material.getMaterialIncBalePrice())) {
+				materialDB.setMaterialIncBalePrice(material.getMaterialIncBalePrice());
 			}
-			if(Objects.nonNull(material.getMaterialOUT())) {
-				materialDB.setMaterialOutBalePrice(material.getMaterialOUT().getBale());
-				materialDB.setMaterialOutLoosePrice(material.getMaterialOUT().getLoose());
+			if(Objects.nonNull(material.getMaterialIncLoosePrice())) {
+				materialDB.setMaterialIncLoosePrice(material.getMaterialIncLoosePrice());
 			}
+			if(Objects.nonNull(material.getMaterialOutBalePrice())) {
+				materialDB.setMaterialOutBalePrice(material.getMaterialOutBalePrice());
+			}
+			if(Objects.nonNull(material.getMaterialOutLoosePrice())) {
+				materialDB.setMaterialOutLoosePrice(material.getMaterialOutLoosePrice());
+			}
+
+//			if(Objects.nonNull(material.getMaterialINC())) {
+//				materialDB.setMaterialIncBalePrice(material.getMaterialINC().getBale());
+//				materialDB.setMaterialIncLoosePrice(material.getMaterialINC().getLoose());
+//			}
+//			if(Objects.nonNull(material.getMaterialOUT())) {
+//				materialDB.setMaterialOutBalePrice(material.getMaterialOUT().getBale());
+//				materialDB.setMaterialOutLoosePrice(material.getMaterialOUT().getLoose());
+//			}
 			materialDB.setVat(material.getVat());
 			return materialRepository.save(materialDB);
 		} else {

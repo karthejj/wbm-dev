@@ -15,4 +15,8 @@ public class MaterialDTO {
 	private MaterialPriceDto materialOUT;
 	private BigDecimal materialWeight;
 	private BigDecimal vat;
+	private BigDecimal materialIncBalePrice;
+	private BigDecimal materialIncLoosePrice;
+	private BigDecimal materialOutBalePrice;
+	private BigDecimal materialOutLoosePrice;
 }
