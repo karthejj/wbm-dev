@@ -62,13 +62,16 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setCustomerName(dto.getCustomerName());
 			transactions.setCustomerId(dto.getCustomerId());
 			transactions.setVehicleNumber(dto.getVehicleNumber());
-			transactions.setCustomer(customerRepository.findByCustomerId(dto.getCustomerType()));
+			transactions.setCustomer(dto.getCustomerType()!=0 ? 
+					customerRepository.findByCustomerId(dto.getCustomerType()): null);
 			transactions.setDriverCount(dto.getDriverCount());
 			transactions.setPhoneNumber(dto.getPhoneNumber());
 			if(dto.getTransferType().name().equals("INC")) {
 				transactions.setTransfer_type("INC");
-			} else {
+			} else if(dto.getTransferType().name().equals("OUT")) {
 				transactions.setTransfer_type("OUT");
+			} else {
+				transactions.setTransfer_type("VEHICLE");
 			}
 			transObj = transactionRepository.saveAndFlush(transactions);
 			List<ChildTransactionDto> childtransactionDetialsDTO =  dto.getChildTransactionDtoList(); // from screen
@@ -96,6 +99,10 @@ public class TransactionserviceImpl implements TransactionService {
 							materialPriceWithoutVat = childTransaction1.getBaleOrLoose().equals("B") ? 
 									materialDB.getMaterialIncBalePrice().multiply(absoluteWeight)
 								: materialDB.getMaterialIncLoosePrice().multiply(absoluteWeight);
+						} else if(dto.getTransferType().name().equals("OUT")) {
+							materialPriceWithoutVat = childTransaction1.getBaleOrLoose().equals("B") ? 
+									materialDB.getMaterialOutBalePrice().multiply(absoluteWeight)
+								: materialDB.getMaterialOutLoosePrice().multiply(absoluteWeight);
 						} else {
 							materialPriceWithoutVat = childTransaction1.getBaleOrLoose().equals("B") ? 
 									materialDB.getMaterialOutBalePrice().multiply(absoluteWeight)
