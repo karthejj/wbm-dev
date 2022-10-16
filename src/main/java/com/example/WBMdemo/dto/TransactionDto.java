@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class TransactionDto {
 
-	private long Id;
+	private long id;
 	private String customerName;
 	private String customerId;
 	private String vehicleNumber;

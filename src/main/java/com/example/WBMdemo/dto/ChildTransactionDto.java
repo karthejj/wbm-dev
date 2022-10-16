@@ -2,15 +2,14 @@ package com.example.WBMdemo.dto;
 
 import java.math.BigDecimal;
 
-import com.example.WBMdemo.entity.TransferType;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode
 public class ChildTransactionDto {
-
+	
+	private long Id;
 	private BigDecimal firstWeight;
 	private BigDecimal secondWeight;
 	private BigDecimal absoluteWeight;
