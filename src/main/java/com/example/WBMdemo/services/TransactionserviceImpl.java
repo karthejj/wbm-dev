@@ -71,7 +71,7 @@ public class TransactionserviceImpl implements TransactionService {
 			} else if(dto.getTransferType().name().equals("OUT")) {
 				transactions.setTransfer_type("OUT");
 			} else {
-				transactions.setTransfer_type("VEHICLE");
+				transactions.setTransfer_type("WEIGH");
 			}
 			transObj = transactionRepository.saveAndFlush(transactions);
 			List<ChildTransactionDto> childtransactionDetialsDTO =  dto.getChildTransactionDtoList(); // from screen
