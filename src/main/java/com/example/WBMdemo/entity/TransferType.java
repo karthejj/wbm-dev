@@ -2,7 +2,7 @@ package com.example.WBMdemo.entity;
 
 public enum TransferType {
 	
-	INC("INC"), OUT("OUT"), WEIGH("WEIGH");
+	INC("INC"), OUT("OUT"), WEIGH("WEIGH"), VEHICLE("VEHICLE");
 	
 	private final String text;
 
