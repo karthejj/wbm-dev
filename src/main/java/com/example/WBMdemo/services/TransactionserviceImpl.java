@@ -77,7 +77,8 @@ public class TransactionserviceImpl implements TransactionService {
 			List<ChildTransactionDto> childtransactionDetialsDTO =  dto.getChildTransactionDtoList(); // from screen
 //			List<ChildTransaction> childTransactionList = transObj.getTransactionDetials(); // from DB
 			// if Transaction is completed, calculate weight & price else update Status
-			if(Objects.nonNull(dto.getIsTransactionCompleted()) && dto.getIsTransactionCompleted()) {
+			if(Objects.nonNull(dto.getIsTransactionCompleted()) && dto.getIsTransactionCompleted()
+					&& !(dto.getCancelReason()!=null && dto.getCancelReason()!="")) {
 				List<ChildTransaction> childTransactionList = childTransactionRepository.findByTransactionsHeader(transObj);
 				System.out.println(childTransactionList.size());
 				if(childtransactionDetialsDTO.size()!=0){
@@ -169,10 +170,13 @@ public class TransactionserviceImpl implements TransactionService {
 						true : false);
 				if(dto.getIsTransactionCancelled()) {
 					//transaction cancelled
-					transObj.setStatus(statusMasterRepository.findByStatusId(2));
+//					transObj.setStatus(statusMasterRepository.findByStatusId(2));
 					transObj.setCancelReason(dto.getCancelReason());
 					transObj.setModifiedDate(LocalDate.now());
 					transObj.setTransactionCompleted(true);
+					status = statusMasterRepository.findByStatusId(2);
+					transObj.setStatus(status);
+					dto.setTransactionStatus(status.getStatusName());
 				} else { //temporary transaction
 					int sizeOfChildRecords = dto.getChildTransactionDtoList().size();
 					ChildTransactionDto lastRecordAdded = dto.getChildTransactionDtoList().get(sizeOfChildRecords-1);
@@ -198,12 +202,13 @@ public class TransactionserviceImpl implements TransactionService {
 					}
 					transObj.setTransactionDetials(childTransactionListTemp);
 					transObj.setVatIncluded(dto.getIncludeVat());
-				}
-					transObj.setCreatedDate(LocalDate.now());
 					transObj.setTransactionCompleted(false);
 					status = statusMasterRepository.findByStatusId(3); 					//transaction temporary
 					transObj.setStatus(status);
 					dto.setTransactionStatus(status.getStatusName());
+				}
+					transObj.setCreatedDate(LocalDate.now());
+					
 					if(dto.getId()!=0) {
 						transObj.setTransactionId(dto.getId());
 					}
