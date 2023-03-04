@@ -1,7 +1,7 @@
 package com.example.WBMdemo.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import com.example.WBMdemo.dto.CodeAndDescriptionDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -98,15 +95,33 @@ public class TransactionsHeader {
 //	@Column(name = "BALE_LOOSE")
 //	private String baleOrLoose;
 	
-	@Column(name="CREATED_DATE")
-	private LocalDate createdDate;
-	
-	@Column(name="MODIFIED_DATE")
-	private LocalDate modifiedDate;
+//	@Column(name="CREATED_DATE")
+//	private LocalDate createdDate;
+//	
+//	@Column(name="MODIFIED_DATE")
+//	private LocalDate modifiedDate;
 	
 	@Column(name = "PHONE_NUMBER")
 	private String phoneNumber;
 	
 	@Column(name = "VAT_INCLUDED")
 	private Boolean vatIncluded=true;
+	
+	@Column(name = "created_by", length = 50)
+	private String createdBy;
+
+	@Column(name = "CREATED_DATE")
+	private LocalDateTime createdDate;
+	
+	@Column(name = "modified_by", length = 50)
+	private String modifiedBy;
+	
+	@Column(name = "MODIFIED_DATE")
+	private LocalDateTime modifiedDate;
+	
+	@Column(name = "closed_by", length = 50)
+	private String closedBy;
+	
+	@Column(name = "closed_DATE")
+	private LocalDateTime closedDate;
 }

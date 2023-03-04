@@ -2,13 +2,15 @@ package com.example.WBMdemo.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -156,7 +158,8 @@ public class TransactionserviceImpl implements TransactionService {
 					}
 				}
 				dto.setChildTransactionDtoList(childtransactionDetialsDTO2);
-				transObj.setModifiedDate(LocalDate.now());
+				transObj.setModifiedDate(LocalDateTime.now());
+				transObj.setClosedDate(LocalDateTime.now());
 				transObj.setTransactionCompleted(true);
 				//transaction completed
 				status = statusMasterRepository.findByStatusId(1);
@@ -172,7 +175,8 @@ public class TransactionserviceImpl implements TransactionService {
 					//transaction cancelled
 //					transObj.setStatus(statusMasterRepository.findByStatusId(2));
 					transObj.setCancelReason(dto.getCancelReason());
-					transObj.setModifiedDate(LocalDate.now());
+					transObj.setModifiedDate(LocalDateTime.now());
+					transObj.setClosedDate(LocalDateTime.now());
 					transObj.setTransactionCompleted(true);
 					status = statusMasterRepository.findByStatusId(2);
 					transObj.setStatus(status);
@@ -206,13 +210,17 @@ public class TransactionserviceImpl implements TransactionService {
 					status = statusMasterRepository.findByStatusId(3); 					//transaction temporary
 					transObj.setStatus(status);
 					dto.setTransactionStatus(status.getStatusName());
+					transObj.setCreatedDate(LocalDateTime.now());
+
 				}
-					transObj.setCreatedDate(LocalDate.now());
+					
 					
 					if(dto.getId()!=0) {
 						transObj.setTransactionId(dto.getId());
 					}
 				}
+			dto.setCreated_date(format_date(transObj.getCreatedDate()));
+			dto.setClosed_date(format_date(transObj.getClosedDate()));
 			}
 		TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
 		dto.setId(transObj2.getTransactionId());
@@ -307,6 +315,12 @@ public class TransactionserviceImpl implements TransactionService {
 				transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
 						transactionObj.getStatus().getStatusName() : "");
 				transDto.setCancelReason(transactionObj.getCancelReason());
+				transDto.setCreated_by(transactionObj.getCreatedBy());
+				transDto.setClosed_by(transactionObj.getClosedBy());
+				transDto.setCreated_date(Objects.nonNull(transactionObj.getCreatedDate()) ? 
+						format_date(transactionObj.getCreatedDate()) : null);
+				transDto.setClosed_date(Objects.nonNull(transactionObj.getClosedDate()) ? 
+						format_date(transactionObj.getClosedDate()) : null);
 				transactionDtoList.add(transDto);
 			}
 			return transactionDtoList;
@@ -357,11 +371,33 @@ public class TransactionserviceImpl implements TransactionService {
 					transactionObj.getStatus().getStatusName() : "");
 			transDto.setCancelReason(transactionObj.getCancelReason());
 			transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
+			transDto.setCreated_by(transactionObj.getCreatedBy());
+			transDto.setClosed_by(transactionObj.getClosedBy());
+			transDto.setCreated_date(Objects.nonNull(transactionObj.getCreatedDate()) ? 
+					format_date(transactionObj.getCreatedDate()) : null);
+			transDto.setClosed_date(Objects.nonNull(transactionObj.getClosedDate()) ? 
+					format_date(transactionObj.getClosedDate()) : null);
 
 		} else {
 			throw new TransactionNotFoundException("Transaction Not Found ");
 		}
 		return transDto;
 	}
+	
+
+private String format_date(LocalDateTime time) {
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	Date d=new Date();
+	try {
+		d = sdf.parse(time.toString());
+	} catch (ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	String formattedTime = output.format(d);
+	return formattedTime;
+}
+
 
 }
