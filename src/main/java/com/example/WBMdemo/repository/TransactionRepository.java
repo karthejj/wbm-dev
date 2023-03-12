@@ -25,9 +25,9 @@ public interface TransactionRepository extends JpaRepository<TransactionsHeader,
 //	public List<TransactionsHeader> findByStatus(@Param("status") StatusMaster status, 
 //			@Param("createdDate") LocalDate createdDate);
 	
-	public List<TransactionsHeader> findByCreatedDate(LocalDate createdDate);
+	public List<TransactionsHeader> findByCreatedDate(LocalDateTime createdDate);
 	
 	public List<TransactionsHeader> findByStatusAndCreatedDate(StatusMaster status, 
-			LocalDate createdDate);
+			LocalDateTime createdDate);
 	
 }

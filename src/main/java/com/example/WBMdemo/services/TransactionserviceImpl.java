@@ -251,7 +251,7 @@ public class TransactionserviceImpl implements TransactionService {
 	public List<TransactionDto> fetchCurrentDayTransactionList() {
 		// TODO Auto-generated method stub
 		List<TransactionsHeader> transactionList  = 
-						transactionRepository.findByCreatedDate(LocalDate.now());
+						transactionRepository.findByCreatedDate(LocalDateTime.now());
 				List<TransactionsHeader> sortedUsers = transactionList.stream()
 						  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
 						  .collect(Collectors.toList());
@@ -263,7 +263,7 @@ public class TransactionserviceImpl implements TransactionService {
 	public List<TransactionDto> fetchTemporaryTransactionList(){
 		StatusMaster status = new StatusMaster(3, "TEMPORARY");
 		List<TransactionsHeader> transactionList  = 
-				transactionRepository.findByStatusAndCreatedDate(status, LocalDate.now());
+				transactionRepository.findByStatusAndCreatedDate(status, LocalDateTime.now());
 		List<TransactionsHeader> sortedUsers = transactionList.stream()
 				  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
 				  .collect(Collectors.toList());
