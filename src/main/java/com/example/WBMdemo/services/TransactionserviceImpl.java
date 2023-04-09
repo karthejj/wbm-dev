@@ -61,6 +61,7 @@ public class TransactionserviceImpl implements TransactionService {
 			}else {
 				transactions = new TransactionsHeader();
 			}
+			transactions.setCreatedBy(dto.getCreated_by());
 			transactions.setCustomerName(dto.getCustomerName());
 			transactions.setCustomerId(dto.getCustomerId());
 			transactions.setVehicleNumber(dto.getVehicleNumber());
@@ -159,7 +160,9 @@ public class TransactionserviceImpl implements TransactionService {
 				}
 				dto.setChildTransactionDtoList(childtransactionDetialsDTO2);
 				transObj.setModifiedDate(LocalDateTime.now());
+				transObj.setCreatedBy(dto.getCreated_by());
 				transObj.setClosedDate(LocalDateTime.now());
+				transObj.setClosedBy(dto.getClosed_by());
 				transObj.setTransactionCompleted(true);
 				//transaction completed
 				status = statusMasterRepository.findByStatusId(1);
@@ -168,6 +171,11 @@ public class TransactionserviceImpl implements TransactionService {
 				if(dto.getId()!=0) {
 					transObj.setTransactionId(dto.getId());
 				}
+				TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
+				dto.setId(transObj2.getTransactionId());
+				
+				dto.setCreated_date(format_date(transObj2.getCreatedDate()));
+				dto.setClosed_date(Objects.nonNull(transObj2.getClosedDate()) ? format_date(transObj2.getClosedDate()) : null);
 			} else {
 				dto.setIsTransactionCancelled((dto.getCancelReason()!=null && dto.getCancelReason()!="")?
 						true : false);
@@ -177,6 +185,7 @@ public class TransactionserviceImpl implements TransactionService {
 					transObj.setCancelReason(dto.getCancelReason());
 					transObj.setModifiedDate(LocalDateTime.now());
 					transObj.setClosedDate(LocalDateTime.now());
+					transObj.setClosedBy(dto.getClosed_by());
 					transObj.setTransactionCompleted(true);
 					status = statusMasterRepository.findByStatusId(2);
 					transObj.setStatus(status);
@@ -218,12 +227,17 @@ public class TransactionserviceImpl implements TransactionService {
 					if(dto.getId()!=0) {
 						transObj.setTransactionId(dto.getId());
 					}
+					TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
+					dto.setId(transObj2.getTransactionId());
+					
+					dto.setCreated_date(format_date(transObj2.getCreatedDate()));
+					dto.setClosed_date(Objects.nonNull(transObj2.getClosedDate()) ? format_date(transObj2.getClosedDate()) : null);
+					dto.setCreated_by(transObj2.getCreatedBy());
+					dto.setClosed_by(transObj2.getClosedBy());
 				}
-			dto.setCreated_date(format_date(transObj.getCreatedDate()));
-			dto.setClosed_date(format_date(transObj.getClosedDate()));
 			}
-		TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
-		dto.setId(transObj2.getTransactionId());
+
+		
 		return dto;
 	}
 	
