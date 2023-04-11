@@ -1,6 +1,7 @@
 package com.example.WBMdemo.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,4 +39,16 @@ public class Vehicle {
 	
 	@Column(name = "driverCount")
 	private int driverCount;
+	
+	@Column(name = "created_by", length = 50)
+	private Long createdBy;
+
+	@Column(name = "created_date")
+	private LocalDateTime createdDateTime = LocalDateTime.now();
+	
+	@Column(name = "modified_by", length = 50)
+	private Long modifiedBy;
+	
+	@Column(name = "modified_date")
+	private LocalDateTime modifiedDateTime = LocalDateTime.now();
 }

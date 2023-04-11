@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import javax.persistence.*;
 
 @Entity
-@Table(	name = "users", 
+@Table(	name = "users_1", 
 		uniqueConstraints = { 
 			@UniqueConstraint(columnNames = "username"),
 			@UniqueConstraint(columnNames = "email") 

@@ -60,6 +60,7 @@ public class TransactionserviceImpl implements TransactionService {
 				transactions = transactionRepository.findByTransactionId(dto.getId());
 			}else {
 				transactions = new TransactionsHeader();
+				transactions.setCreatedDate(LocalDateTime.now());
 			}
 			transactions.setCreatedBy(dto.getCreated_by());
 			transactions.setCustomerName(dto.getCustomerName());
@@ -219,7 +220,7 @@ public class TransactionserviceImpl implements TransactionService {
 					status = statusMasterRepository.findByStatusId(3); 					//transaction temporary
 					transObj.setStatus(status);
 					dto.setTransactionStatus(status.getStatusName());
-					transObj.setCreatedDate(LocalDateTime.now());
+//					transObj.setCreatedDate(LocalDateTime.now());
 
 				}
 					
