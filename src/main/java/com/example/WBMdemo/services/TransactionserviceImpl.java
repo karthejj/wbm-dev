@@ -278,7 +278,7 @@ public class TransactionserviceImpl implements TransactionService {
 	public List<TransactionDto> fetchTemporaryTransactionList(){
 		StatusMaster status = new StatusMaster(3, "TEMPORARY");
 		List<TransactionsHeader> transactionList  = 
-				transactionRepository.findByStatusAndCreatedDate(status, LocalDateTime.now());
+				transactionRepository.findByStatusAndCreatedDate(status, LocalDate.now());
 		List<TransactionsHeader> sortedUsers = transactionList.stream()
 				  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
 				  .collect(Collectors.toList());

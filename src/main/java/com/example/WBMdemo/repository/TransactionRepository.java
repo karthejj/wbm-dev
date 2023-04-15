@@ -27,7 +27,10 @@ public interface TransactionRepository extends JpaRepository<TransactionsHeader,
 	
 	public List<TransactionsHeader> findByCreatedDate(LocalDateTime createdDate);
 	
+	@Query(value = "SELECT * FROM postgreswbm.TRANSACTIONS_HEADER th "
+			+ "WHERE th.STATUS_ID = :status " 
+			+" AND date_trunc('day', th.CREATED_DATE\\:\\:timestamp) = to_date(:createdDate, 'YYYY-MM-DD') ", nativeQuery = true)
 	public List<TransactionsHeader> findByStatusAndCreatedDate(StatusMaster status, 
-			LocalDateTime createdDate);
+			LocalDate createdDate);
 	
 }
