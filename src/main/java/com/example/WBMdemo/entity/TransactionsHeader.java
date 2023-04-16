@@ -124,4 +124,9 @@ public class TransactionsHeader {
 	
 	@Column(name = "closed_DATE")
 	private LocalDateTime closedDate;
+	
+	@Column(name = "RAW_WEIGHT_ID")
+	private long rawWeightId;
+	
+	
 }

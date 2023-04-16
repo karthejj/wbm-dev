@@ -46,6 +46,8 @@ public class TransactionserviceImpl implements TransactionService {
 	private MaterialRepository materialRepository; 
 	@Autowired
 	private StatusMasterRepository statusMasterRepository;
+	@Autowired
+	private InitialWeightService rawWeightService;
 	
 	@Override
 	public TransactionDto saveTransaction(TransactionDto dto) {
@@ -172,6 +174,8 @@ public class TransactionserviceImpl implements TransactionService {
 				if(dto.getId()!=0) {
 					transObj.setTransactionId(dto.getId());
 				}
+				//for latest weight read from device
+				transObj.setRawWeightId(Long.parseLong(dto.getRawWeightId()));
 				TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
 				dto.setId(transObj2.getTransactionId());
 				
@@ -228,6 +232,8 @@ public class TransactionserviceImpl implements TransactionService {
 					if(dto.getId()!=0) {
 						transObj.setTransactionId(dto.getId());
 					}
+					//for latest weight read from device
+					transObj.setRawWeightId(Long.parseLong(dto.getRawWeightId()));
 					TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
 					dto.setId(transObj2.getTransactionId());
 					
