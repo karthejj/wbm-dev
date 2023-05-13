@@ -44,6 +44,7 @@ public class TransactionDto {
 	private String rawWeightId;
 //	private String created_date1 = format_date(created_date);
 //	private String closed_date1 = format_date(closed_date);
+	private String vehicleType;
 	
 	
 }

@@ -128,5 +128,8 @@ public class TransactionsHeader {
 	@Column(name = "RAW_WEIGHT_ID")
 	private long rawWeightId;
 	
+	@Column(name = "VEHICLE_TYPE")
+	private String vehicle_type;
+	
 	
 }

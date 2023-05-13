@@ -68,6 +68,8 @@ public class TransactionserviceImpl implements TransactionService {
 			transactions.setCustomerName(dto.getCustomerName());
 			transactions.setCustomerId(dto.getCustomerId());
 			transactions.setVehicleNumber(dto.getVehicleNumber());
+			//vehicle type
+			transactions.setVehicle_type(dto.getVehicleType());
 			transactions.setCustomer(dto.getCustomerType()!=0 ? 
 					customerRepository.findByCustomerId(dto.getCustomerType()): null);
 			transactions.setDriverCount(dto.getDriverCount());
@@ -303,6 +305,7 @@ public class TransactionserviceImpl implements TransactionService {
 				transDto.setCustomerType(transactionObj.getCustomer() != null ? 
 						transactionObj.getCustomer().getCustomerId() : 0);
 				transDto.setVehicleNumber(transactionObj.getVehicleNumber());
+				transDto.setVehicleType(transactionObj.getVehicle_type()); // vehicle type
 				transDto.setDriverCount(transactionObj.getDriverCount());
 				transDto.setPhoneNumber(transactionObj.getPhoneNumber());
 				transDto.setTransferType(TransferType.valueOf(transactionObj.getTransfer_type()));
@@ -360,6 +363,7 @@ public class TransactionserviceImpl implements TransactionService {
 			transDto.setCustomerType(transactionObj.getCustomer() != null ? 
 					transactionObj.getCustomer().getCustomerId() : 0);
 			transDto.setVehicleNumber(transactionObj.getVehicleNumber());
+			transDto.setVehicleType(transactionObj.getVehicle_type()); // vehicle type
 			transDto.setDriverCount(transactionObj.getDriverCount());
 			transDto.setPhoneNumber(transactionObj.getPhoneNumber());
 			List<ChildTransactionDto> transactionDetials = null;
