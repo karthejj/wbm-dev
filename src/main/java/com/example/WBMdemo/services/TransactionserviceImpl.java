@@ -177,7 +177,9 @@ public class TransactionserviceImpl implements TransactionService {
 					transObj.setTransactionId(dto.getId());
 				}
 				//for latest weight read from device
-				transObj.setRawWeightId(Long.parseLong(dto.getRawWeightId()));
+				if(dto.getRawWeightId()!=null) {
+					transObj.setRawWeightId(Long.parseLong(dto.getRawWeightId()));
+				}
 				TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
 				dto.setId(transObj2.getTransactionId());
 				
@@ -235,7 +237,9 @@ public class TransactionserviceImpl implements TransactionService {
 						transObj.setTransactionId(dto.getId());
 					}
 					//for latest weight read from device
-					transObj.setRawWeightId(Long.parseLong(dto.getRawWeightId()));
+					if(dto.getRawWeightId()!=null) {
+						transObj.setRawWeightId(Long.parseLong(dto.getRawWeightId()));
+					}
 					TransactionsHeader transObj2 = transactionRepository.saveAndFlush(transObj);
 					dto.setId(transObj2.getTransactionId());
 					
