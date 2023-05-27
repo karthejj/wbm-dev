@@ -125,7 +125,9 @@ public class TransactionserviceImpl implements TransactionService {
 							childTransaction1.setMaterialPriceAfterVat(materialPriceWithoutVat);
 							childTransaction1.setVat(new BigDecimal(0));
 						}
-						childTransaction1.setVatCost(childTransaction1.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
+						if(dto.getIncludeVat()) {
+							childTransaction1.setVatCost(childTransaction1.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
+						}
 						childTransaction1.setTransactionsHeader(transObj);
 						childTransactionRepository.save(childTransaction1);
 //						childTransactionList.add(childTransaction1);
@@ -143,7 +145,7 @@ public class TransactionserviceImpl implements TransactionService {
 							.subtract(transObj.getMaterialPrice()));
 					dto.setTotalWeight(transObj.getTotalWeight());
 					dto.setVatCost(transObj.getVatCost());
-					dto.setFinalAmount(transObj.getFinalAmountWithVat());
+					dto.setFinalAmount(new BigDecimal(transObj.getFinalAmountWithVat().toBigInteger().toString()));
 					
 				}
 				List<ChildTransactionDto> childtransactionDetialsDTO2 = new ArrayList<ChildTransactionDto>();
