@@ -127,6 +127,8 @@ public class TransactionserviceImpl implements TransactionService {
 						}
 						if(dto.getIncludeVat()) {
 							childTransaction1.setVatCost(childTransaction1.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
+						} else {
+							childTransaction1.setVatCost(new BigDecimal(0));
 						}
 						childTransaction1.setTransactionsHeader(transObj);
 						childTransactionRepository.save(childTransaction1);
