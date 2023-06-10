@@ -19,5 +19,7 @@ public class ChildTransactionDto {
 	private BigDecimal vatCost;
 	private BigDecimal materialPricewithoutVat;
 	private BigDecimal materialPricewithVat;
+	private BigDecimal materialPricewithoutVatRoundOff;
+	private BigDecimal materialPricewithVatRoundOff;
 
 }

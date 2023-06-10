@@ -147,8 +147,14 @@ public class TransactionserviceImpl implements TransactionService {
 							.subtract(transObj.getMaterialPrice()));
 					dto.setTotalWeight(transObj.getTotalWeight());
 					dto.setVatCost(transObj.getVatCost());
-					dto.setFinalAmount(new BigDecimal(transObj.getFinalAmountWithVat().toBigInteger().toString()));
-					
+					//setting the final Amount without & with round off checking vat - 10-jun-23
+					if(dto.getIncludeVat()) {
+						dto.setFinalAmountRoundOff(new BigDecimal(transObj.getFinalAmountWithVat().toBigInteger().toString()));
+						dto.setFinalAmount(transObj.getFinalAmountWithVat());
+					} else {
+						dto.setFinalAmountRoundOff(new BigDecimal(transObj.getMaterialPrice().toBigInteger().toString()));
+						dto.setFinalAmount(transObj.getMaterialPrice());
+					}
 				}
 				List<ChildTransactionDto> childtransactionDetialsDTO2 = new ArrayList<ChildTransactionDto>();
 				if(childtransactionDetialsDTO.size()!=0){
@@ -164,6 +170,11 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionDto1.setVatCost(childTransaction1.getVatCost());
 						childTransactionDto1.setMaterialPricewithVat(childTransaction1.getMaterialPriceAfterVat());
 						childTransactionDto1.setMaterialPricewithoutVat(childTransaction1.getMaterialPrice());
+						
+						//rounding off the amount - 10-jun-23
+						childTransactionDto1.setMaterialPricewithVatRoundOff(new BigDecimal(childTransaction1.getMaterialPriceAfterVat().toBigInteger().toString()));
+						childTransactionDto1.setMaterialPricewithoutVatRoundOff(new BigDecimal(childTransaction1.getMaterialPrice().toBigInteger().toString()));
+						
 						childtransactionDetialsDTO2.add(childTransactionDto1);
 					}
 				}
