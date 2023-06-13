@@ -77,5 +77,8 @@ public class ChildTransaction {
 	@Column(name = "modified_date")
 	private LocalDateTime modifiedDateTime;
 	
+	@Column(name = "VAT_INCLUDED")
+	private Boolean vatIncluded;
+	
 	
 }

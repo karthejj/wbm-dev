@@ -118,16 +118,14 @@ public class TransactionserviceImpl implements TransactionService {
 								: materialDB.getMaterialOutLoosePrice().multiply(absoluteWeight);
 						}
 						childTransaction1.setMaterialPrice(materialPriceWithoutVat);
+						childTransaction1.setVatIncluded(dto.getIncludeVat()); // set the vat 
 						if(dto.getIncludeVat()) {
 							childTransaction1.setMaterialPriceAfterVat(materialPriceWithoutVat.add(materialPriceWithoutVat.multiply(materialDB.getVat()).divide(new BigDecimal(100))));
 							childTransaction1.setVat(materialDB.getVat());
+							childTransaction1.setVatCost(childTransaction1.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
 						} else {
 							childTransaction1.setMaterialPriceAfterVat(materialPriceWithoutVat);
 							childTransaction1.setVat(new BigDecimal(0));
-						}
-						if(dto.getIncludeVat()) {
-							childTransaction1.setVatCost(childTransaction1.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
-						} else {
 							childTransaction1.setVatCost(new BigDecimal(0));
 						}
 						childTransaction1.setTransactionsHeader(transObj);
@@ -142,19 +140,19 @@ public class TransactionserviceImpl implements TransactionService {
 
 					transObj.setFinalAmountWithVat(new BigDecimal(
 							childTransactionList.stream().mapToDouble(o -> o.getMaterialPriceAfterVat().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
-					transObj.setVatIncluded(dto.getIncludeVat());
+//					transObj.setVatIncluded(dto.getIncludeVat());
 					transObj.setVatCost(transObj.getFinalAmountWithVat()
 							.subtract(transObj.getMaterialPrice()));
 					dto.setTotalWeight(transObj.getTotalWeight());
 					dto.setVatCost(transObj.getVatCost());
 					//setting the final Amount without & with round off checking vat - 10-jun-23
-					if(dto.getIncludeVat()) {
+//					if(dto.getIncludeVat()) {
 						dto.setFinalAmountRoundOff(new BigDecimal(transObj.getFinalAmountWithVat().toBigInteger().toString()));
 						dto.setFinalAmount(transObj.getFinalAmountWithVat());
-					} else {
-						dto.setFinalAmountRoundOff(new BigDecimal(transObj.getMaterialPrice().toBigInteger().toString()));
-						dto.setFinalAmount(transObj.getMaterialPrice());
-					}
+//					} else {
+//						dto.setFinalAmountRoundOff(new BigDecimal(transObj.getMaterialPrice().toBigInteger().toString()));
+//						dto.setFinalAmount(transObj.getMaterialPrice());
+//					}
 				}
 				List<ChildTransactionDto> childtransactionDetialsDTO2 = new ArrayList<ChildTransactionDto>();
 				if(childtransactionDetialsDTO.size()!=0){
@@ -174,7 +172,8 @@ public class TransactionserviceImpl implements TransactionService {
 						//rounding off the amount - 10-jun-23
 						childTransactionDto1.setMaterialPricewithVatRoundOff(new BigDecimal(childTransaction1.getMaterialPriceAfterVat().toBigInteger().toString()));
 						childTransactionDto1.setMaterialPricewithoutVatRoundOff(new BigDecimal(childTransaction1.getMaterialPrice().toBigInteger().toString()));
-						
+						//get vat included or not - 11-jun-23
+						childTransactionDto1.setIncludeVat(childTransaction1.getVatIncluded());
 						childtransactionDetialsDTO2.add(childTransactionDto1);
 					}
 				}
@@ -231,6 +230,7 @@ public class TransactionserviceImpl implements TransactionService {
 							childTransactionNewAddition.setMaterial(materialDB);
 							childTransactionNewAddition.setBaleOrLoose(lastRecordAdded.getBaleOrLoose()); //B or L
 							childTransactionNewAddition.setMaterialFirstWeight(lastRecordAdded.getFirstWeight());
+							childTransactionNewAddition.setVatIncluded(dto.getIncludeVat());
 							childTransactionNewAddition.setTransactionsHeader(transObj);
 							ChildTransaction newChildTransaction = childTransactionRepository.saveAndFlush(childTransactionNewAddition);
 							dto.getChildTransactionDtoList().get(sizeOfChildRecords-1)
@@ -238,7 +238,7 @@ public class TransactionserviceImpl implements TransactionService {
 							childTransactionListTemp.add(childTransactionNewAddition);
 					}
 					transObj.setTransactionDetials(childTransactionListTemp);
-					transObj.setVatIncluded(dto.getIncludeVat());
+//					transObj.setVatIncluded(dto.getIncludeVat());
 					transObj.setTransactionCompleted(false);
 					status = statusMasterRepository.findByStatusId(3); 					//transaction temporary
 					transObj.setStatus(status);
@@ -262,6 +262,47 @@ public class TransactionserviceImpl implements TransactionService {
 					dto.setClosed_date(Objects.nonNull(transObj2.getClosedDate()) ? format_date(transObj2.getClosedDate()) : null);
 					dto.setCreated_by(transObj2.getCreatedBy());
 					dto.setClosed_by(transObj2.getClosedBy());
+					
+					
+					
+					
+					
+					
+					List<ChildTransactionDto> transactionDetials = null;
+					List<ChildTransaction> transactionDetialsfromDB = null;
+					if(transObj2.getTransactionDetials().size()!=0) {
+						transactionDetialsfromDB = transObj2.getTransactionDetials();
+						transactionDetials = new ArrayList<ChildTransactionDto>();
+						for(ChildTransaction childtrans : transactionDetialsfromDB) {
+							ChildTransactionDto childTransactionDto = new ChildTransactionDto();
+							childTransactionDto.setBaleOrLoose(childtrans.getBaleOrLoose());
+							childTransactionDto.setFirstWeight(childtrans.getMaterialFirstWeight());
+							childTransactionDto.setSecondWeight(childtrans.getMaterialSecondWeight());
+							childTransactionDto.setAbsoluteWeight(childtrans.getMaterialAbsoluteWeight());
+							childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
+							childTransactionDto.setVat(childtrans.getVat());
+							childTransactionDto.setVatCost(childtrans.getVatCost());
+							childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
+							childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+							
+							//rounding off the amount - 10-jun-23
+							if(childtrans.getMaterialPriceAfterVat()!=null) {
+								childTransactionDto.setMaterialPricewithVatRoundOff(new BigDecimal(childtrans.getMaterialPriceAfterVat().toBigInteger().toString()));
+							}
+							if(childtrans.getMaterialPrice()!=null) {
+								childTransactionDto.setMaterialPricewithoutVatRoundOff(new BigDecimal(childtrans.getMaterialPrice().toBigInteger().toString()));
+							}
+							
+							childTransactionDto.setIncludeVat(childtrans.getVatIncluded());
+							childTransactionDto.setId(childtrans.getChildTransactionId());
+							transactionDetials.add(childTransactionDto);
+						}
+					}
+
+					
+					dto.setChildTransactionDtoList(transactionDetials);
+				
+					
 				}
 			}
 
@@ -345,14 +386,23 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionDto.setVatCost(childtrans.getVatCost());
 						childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
 						childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+						
+						//rounding off the amount - 10-jun-23
+						if(childtrans.getMaterialPriceAfterVat()!=null) {
+							childTransactionDto.setMaterialPricewithVatRoundOff(new BigDecimal(childtrans.getMaterialPriceAfterVat().toBigInteger().toString()));
+						}
+						if(childtrans.getMaterialPrice()!=null) {
+							childTransactionDto.setMaterialPricewithoutVatRoundOff(new BigDecimal(childtrans.getMaterialPrice().toBigInteger().toString()));
+						}
+						childTransactionDto.setIncludeVat(childtrans.getVatIncluded());
+						childTransactionDto.setId(childtrans.getChildTransactionId());
 						transactionDetials.add(childTransactionDto);
 					}
 				}
 				
 				transDto.setTotalWeight(transactionObj.getTotalWeight());
 				transDto.setVatCost(transactionObj.getVatCost());
-				transDto.setFinalAmount(transactionObj.getFinalAmountWithVat());
-				
+								
 				transDto.setChildTransactionDtoList(transactionDetials);
 				transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
 				transDto.setTransactionStatus(transactionObj.getStatus() !=null ?
@@ -364,6 +414,11 @@ public class TransactionserviceImpl implements TransactionService {
 						format_date(transactionObj.getCreatedDate()) : null);
 				transDto.setClosed_date(Objects.nonNull(transactionObj.getClosedDate()) ? 
 						format_date(transactionObj.getClosedDate()) : null);
+				if(transactionObj.getFinalAmountWithVat()!=null) {
+					transDto.setFinalAmountRoundOff(new BigDecimal(transactionObj.getFinalAmountWithVat().toBigInteger().toString()));
+				}
+				transDto.setFinalAmount(transactionObj.getFinalAmountWithVat());
+				
 				transactionDtoList.add(transDto);
 			}
 			return transactionDtoList;
@@ -401,13 +456,22 @@ public class TransactionserviceImpl implements TransactionService {
 					childTransactionDto.setVatCost(childtrans.getVatCost());
 					childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
 					childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+					
+					//rounding off the amount - 10-jun-23
+					if(childtrans.getMaterialPriceAfterVat()!=null) {
+						childTransactionDto.setMaterialPricewithVatRoundOff(new BigDecimal(childtrans.getMaterialPriceAfterVat().toBigInteger().toString()));
+					}
+					if(childtrans.getMaterialPrice()!=null) {
+						childTransactionDto.setMaterialPricewithoutVatRoundOff(new BigDecimal(childtrans.getMaterialPrice().toBigInteger().toString()));
+					}
+					childTransactionDto.setIncludeVat(childtrans.getVatIncluded());
+					childTransactionDto.setId(childtrans.getChildTransactionId());
 					transactionDetials.add(childTransactionDto);
 				}
 			}
 			
 			transDto.setTotalWeight(transactionObj.getTotalWeight());
 			transDto.setVatCost(transactionObj.getVatCost());
-			transDto.setFinalAmount(transactionObj.getFinalAmountWithVat());
 			
 			transDto.setChildTransactionDtoList(transactionDetials);
 			transDto.setIsTransactionCompleted(transactionObj.getTransactionCompleted());
@@ -421,6 +485,12 @@ public class TransactionserviceImpl implements TransactionService {
 					format_date(transactionObj.getCreatedDate()) : null);
 			transDto.setClosed_date(Objects.nonNull(transactionObj.getClosedDate()) ? 
 					format_date(transactionObj.getClosedDate()) : null);
+			
+			if(transactionObj.getFinalAmountWithVat()!=null) {
+				transDto.setFinalAmountRoundOff(new BigDecimal(transactionObj.getFinalAmountWithVat().toBigInteger().toString()));
+			}
+			
+			transDto.setFinalAmount(transactionObj.getFinalAmountWithVat());
 
 		} else {
 			throw new TransactionNotFoundException("Transaction Not Found ");

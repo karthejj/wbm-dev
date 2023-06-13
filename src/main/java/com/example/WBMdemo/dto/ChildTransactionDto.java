@@ -21,5 +21,5 @@ public class ChildTransactionDto {
 	private BigDecimal materialPricewithVat;
 	private BigDecimal materialPricewithoutVatRoundOff;
 	private BigDecimal materialPricewithVatRoundOff;
-
+	private Boolean includeVat;
 }
