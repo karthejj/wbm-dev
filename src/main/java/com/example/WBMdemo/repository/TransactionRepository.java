@@ -40,7 +40,7 @@ public interface TransactionRepository extends JpaRepository<TransactionsHeader,
 	@Query(value = "UPDATE postgreswbm.transactions_header"
 			+ "	SET status_id = 1, additional_comments = 'scheduler_job', modified_date = NOW() AT TIME ZONE 'UTC'"
 			+ "	WHERE status_id = 3 AND transaction_completed = 'false'"
-			+ "	AND transfer_type = 'OUT' AND created_date BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()", nativeQuery = true)
+			+ "	AND transfer_type = 'WEIGH' AND created_date BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()", nativeQuery = true)
 	public void updateTransactionGreatTwentyFourHr();
 	
 	
