@@ -131,5 +131,8 @@ public class TransactionsHeader {
 	@Column(name = "VEHICLE_TYPE")
 	private String vehicle_type;
 	
+	@Column(name = "ADDITIONAL_COMMENTS")
+	private String additional_comments;
+	
 	
 }

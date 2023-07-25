@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.WBMdemo.dto.ChildTransactionDto;
@@ -62,7 +64,7 @@ public class TransactionserviceImpl implements TransactionService {
 				transactions = transactionRepository.findByTransactionId(dto.getId());
 			}else {
 				transactions = new TransactionsHeader();
-				transactions.setCreatedDate(LocalDateTime.now());
+				transactions.setCreatedDate(LocalDateTime.now(ZoneOffset.UTC));
 			}
 			transactions.setCreatedBy(dto.getCreated_by());
 			transactions.setCustomerName(dto.getCustomerName());
@@ -178,9 +180,9 @@ public class TransactionserviceImpl implements TransactionService {
 					}
 				}
 				dto.setChildTransactionDtoList(childtransactionDetialsDTO2);
-				transObj.setModifiedDate(LocalDateTime.now());
+				transObj.setModifiedDate(LocalDateTime.now(ZoneOffset.UTC));
 				transObj.setCreatedBy(dto.getCreated_by());
-				transObj.setClosedDate(LocalDateTime.now());
+				transObj.setClosedDate(LocalDateTime.now(ZoneOffset.UTC));
 				transObj.setClosedBy(dto.getClosed_by());
 				transObj.setTransactionCompleted(true);
 				//transaction completed
@@ -206,8 +208,8 @@ public class TransactionserviceImpl implements TransactionService {
 					//transaction cancelled
 //					transObj.setStatus(statusMasterRepository.findByStatusId(2));
 					transObj.setCancelReason(dto.getCancelReason());
-					transObj.setModifiedDate(LocalDateTime.now());
-					transObj.setClosedDate(LocalDateTime.now());
+					transObj.setModifiedDate(LocalDateTime.now(ZoneOffset.UTC));
+					transObj.setClosedDate(LocalDateTime.now(ZoneOffset.UTC));
 					transObj.setClosedBy(dto.getClosed_by());
 					transObj.setTransactionCompleted(true);
 					status = statusMasterRepository.findByStatusId(2);
@@ -334,7 +336,7 @@ public class TransactionserviceImpl implements TransactionService {
 	public List<TransactionDto> fetchCurrentDayTransactionList() {
 		// TODO Auto-generated method stub
 		List<TransactionsHeader> transactionList  = 
-						transactionRepository.findByCreatedDate(LocalDateTime.now());
+						transactionRepository.findByCreatedDate(LocalDateTime.now(ZoneOffset.UTC));
 				List<TransactionsHeader> sortedUsers = transactionList.stream()
 						  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
 						  .collect(Collectors.toList());
@@ -346,7 +348,7 @@ public class TransactionserviceImpl implements TransactionService {
 	public List<TransactionDto> fetchTemporaryTransactionList(){
 		StatusMaster status = new StatusMaster(3, "TEMPORARY");
 		List<TransactionsHeader> transactionList  = 
-				transactionRepository.findByStatusAndCreatedDate(status, LocalDate.now());
+				transactionRepository.findByStatusAndCreatedDate(status, LocalDate.now(ZoneOffset.UTC));
 		List<TransactionsHeader> sortedUsers = transactionList.stream()
 				  .sorted(Comparator.comparing(TransactionsHeader::getTransactionId))
 				  .collect(Collectors.toList());
@@ -511,6 +513,12 @@ private String format_date(LocalDateTime time) {
 	}
 	String formattedTime = output.format(d);
 	return formattedTime;
+}
+
+@Scheduled(cron = "${app.scheduler.transaction.process.cron}")
+public void schedulerOnMidnight() {   
+	transactionRepository.updateTransactionGreatTwentyFourHr();
+
 }
 
 

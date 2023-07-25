@@ -8,9 +8,9 @@ import com.example.WBMdemo.errors.DuplicateMaterialException;
 
 public interface MaterialService {
 
-	public Material saveMaterial(MaterialDTO material) throws DuplicateMaterialException;
-	public List<Material> fetchMaterialList(String sortParam, int order);
-	public Material getMaterial(long materialId);
+	public MaterialDTO saveMaterial(MaterialDTO material) throws DuplicateMaterialException;
+	public List<MaterialDTO> fetchMaterialList(String sortParam, int order);
+	public MaterialDTO getMaterial(long materialId);
 	public String getActualIncBaleMaterialCost(MaterialDTO material);
 	public String getActualIncLooseMaterialCost(MaterialDTO material);
 	public String getActualOutBaleMaterialCost(MaterialDTO material);

@@ -1,6 +1,7 @@
 package com.example.WBMdemo.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import javax.annotation.Generated;
 import javax.persistence.Column;
@@ -48,5 +49,17 @@ public class Material {
 	
 	@Column(name = "VAT")
 	private BigDecimal vat;
+	
+	@Column(name = "created_by", length = 50)
+	private Long createdBy;
+
+	@Column(name = "created_date")
+	private LocalDateTime createdDateTime = LocalDateTime.now();
+	
+	@Column(name = "modified_by", length = 50)
+	private Long modifiedBy;
+	
+	@Column(name = "modified_date")
+	private LocalDateTime modifiedDateTime = LocalDateTime.now();
 	
 }

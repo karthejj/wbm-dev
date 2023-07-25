@@ -1,5 +1,10 @@
 package com.example.WBMdemo.services;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,10 +29,10 @@ public class MaterialServiceImpl implements MaterialService {
 	private MaterialRepository materialRepository;
 	
 	@Override
-	public Material saveMaterial(MaterialDTO material) throws DuplicateMaterialException {
+	public MaterialDTO saveMaterial(MaterialDTO material) throws DuplicateMaterialException {
 		// TODO Auto-generated method stub
 
-
+		MaterialDTO material_dto; 
 		Material materialDB = null;
 		if(material.getMaterialId()!=null) {
 			materialDB = materialRepository.findByMaterialId(material.getMaterialId());
@@ -56,7 +61,16 @@ public class MaterialServiceImpl implements MaterialService {
 //				materialDB.setMaterialOutLoosePrice(material.getMaterialOUT().getLoose());
 //			}
 			materialDB.setVat(material.getVat());
-			return materialRepository.save(materialDB);
+			materialRepository.save(materialDB);
+			material_dto = new MaterialDTO(materialDB.getMaterialId(), 
+					materialDB.getMaterialName(), materialDB.getVat(), materialDB.getMaterialIncBalePrice(), 
+					 materialDB.getMaterialIncLoosePrice(),  
+					 materialDB.getMaterialOutBalePrice(), 
+					 materialDB.getMaterialOutLoosePrice(),
+					 Objects.nonNull(materialDB.getCreatedBy()) ? materialDB.getCreatedBy().toString() : null,
+						Objects.nonNull(materialDB.getCreatedDateTime()) ? 
+								format_date(materialDB.getCreatedDateTime()) : null);
+			return material_dto;
 		} else {
 			Material materialNew = new Material();
 //			Material materialDuplicate = materialRepository.findByMaterialName(material.getMaterialName());
@@ -78,14 +92,28 @@ public class MaterialServiceImpl implements MaterialService {
 			}
 
 			materialNew.setVat(material.getVat());
-			return materialRepository.save(materialNew);
+			
+			materialRepository.save(materialNew);
+			material_dto = new MaterialDTO(materialNew.getMaterialId(), 
+					materialNew.getMaterialName(), materialNew.getVat(), materialNew.getMaterialIncBalePrice(), 
+					materialNew.getMaterialIncLoosePrice(),  
+					materialNew.getMaterialOutBalePrice(), 
+					materialNew.getMaterialOutLoosePrice(),
+					Objects.nonNull(materialNew.getCreatedBy()) ? materialNew.getCreatedBy().toString() : null,
+					Objects.nonNull(materialNew.getCreatedDateTime()) ? 
+							format_date(materialNew.getCreatedDateTime()) : null);
+			
+			return material_dto;
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public List<Material> fetchMaterialList(String sortParam, int order) {
+	public List<MaterialDTO> fetchMaterialList(String sortParam, int order) {
 		// TODO Auto-generated method stub
 		List<Material> materialList = null;
+		List<MaterialDTO> materialDtoList = new ArrayList<MaterialDTO>();
+		
 		if(sortParam!=null && order!=0) {
 			if(order==1) {
 				materialList = 
@@ -98,13 +126,31 @@ public class MaterialServiceImpl implements MaterialService {
 			materialList = 
 					materialRepository.findAll(Sort.by(Sort.Direction.ASC));
 		}
-		return materialList;
+		for(Material materialNew : materialList) {
+			materialDtoList.add(new MaterialDTO(materialNew.getMaterialId(), 
+					materialNew.getMaterialName(), materialNew.getVat(), materialNew.getMaterialIncBalePrice(), 
+					materialNew.getMaterialIncLoosePrice(),  
+					materialNew.getMaterialOutBalePrice(), 
+					materialNew.getMaterialOutLoosePrice(),
+					Objects.nonNull(materialNew.getCreatedBy()) ? materialNew.getCreatedBy().toString() : null,
+					Objects.nonNull(materialNew.getCreatedDateTime()) ? 
+							format_date(materialNew.getCreatedDateTime()) : null));
+		}
+		return materialDtoList;
 	}
 
 	@Override
-	public Material getMaterial(long materialId) {
+	public MaterialDTO getMaterial(long materialId) {
 		// TODO Auto-generated method stub
-		return materialRepository.findByMaterialId(materialId);
+		Material materialNew = materialRepository.findByMaterialId(materialId);
+		return new MaterialDTO(materialNew.getMaterialId(), 
+				materialNew.getMaterialName(), materialNew.getVat(), materialNew.getMaterialIncBalePrice(), 
+				materialNew.getMaterialIncLoosePrice(),  
+				materialNew.getMaterialOutBalePrice(), 
+				materialNew.getMaterialOutLoosePrice(),
+				Objects.nonNull(materialNew.getCreatedBy()) ? materialNew.getCreatedBy().toString() : null,
+				Objects.nonNull(materialNew.getCreatedDateTime()) ? 
+						format_date(materialNew.getCreatedDateTime()) : null);
 	}
 
 	@Override
@@ -133,6 +179,20 @@ public class MaterialServiceImpl implements MaterialService {
 		// TODO Auto-generated method stub
 		return materialRepository.findByMaterialId(material.getMaterialId())
 				.getMaterialOutLoosePrice().multiply(material.getMaterialWeight()).toString();
+	}
+	
+	private String format_date(LocalDateTime time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date d=new Date();
+		try {
+			d = sdf.parse(time.toString());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String formattedTime = output.format(d);
+		return formattedTime;
 	}
 	
 	
