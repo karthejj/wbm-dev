@@ -17,9 +17,10 @@ public class ChildTransactionDto {
 	private String baleOrLoose;
 	private BigDecimal vat;
 	private BigDecimal vatCost;
-	private BigDecimal materialPricewithoutVat;
-	private BigDecimal materialPricewithVat;
-	private BigDecimal materialPricewithoutVatRoundOff;
-	private BigDecimal materialPricewithVatRoundOff;
+	private BigDecimal transactionPricewithoutVat;
+	private BigDecimal transactionPricewithVat;
+	private BigDecimal transactionPricewithoutVatRoundOff;
+	private BigDecimal transactionPricewithVatRoundOff;
 	private Boolean includeVat;
+	private BigDecimal materialPricePerTonne;
 }

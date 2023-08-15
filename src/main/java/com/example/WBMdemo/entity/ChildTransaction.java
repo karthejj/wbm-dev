@@ -50,7 +50,7 @@ public class ChildTransaction {
 	private BigDecimal materialAbsoluteWeight;
 	
 	@Column(name = "MATERIAL_PRICE")
-	private BigDecimal materialPrice;
+	private BigDecimal transactionPrice;
 	
 	@Column(name = "VAT")
 	private BigDecimal vat;
@@ -59,7 +59,7 @@ public class ChildTransaction {
 	private BigDecimal vatCost;
 
 	@Column(name = "MATERIAL_PRICE_AFTER_VAT")
-	private BigDecimal materialPriceAfterVat;
+	private BigDecimal transactionPriceAfterVat;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="TRANSACTION_HEADER_ID")
@@ -79,6 +79,9 @@ public class ChildTransaction {
 	
 	@Column(name = "VAT_INCLUDED")
 	private Boolean vatIncluded;
+	
+	@Column(name = "MATERIAL_PRICE1")
+	private BigDecimal materialPrice;
 	
 	
 }

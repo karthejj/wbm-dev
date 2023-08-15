@@ -71,7 +71,7 @@ public class TransactionsHeader {
 	private BigDecimal totalWeight;
 	
 	@Column(name = "MATERIAL_PRICE")
-	private BigDecimal materialPrice;
+	private BigDecimal finalAmountWithoutVat;
 	
 	@Column(name = "VAT")
 	private BigDecimal vatCost;

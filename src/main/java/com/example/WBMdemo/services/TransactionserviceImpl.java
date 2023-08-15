@@ -8,6 +8,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -110,41 +111,48 @@ public class TransactionserviceImpl implements TransactionService {
 							materialPriceWithoutVat = childTransaction1.getBaleOrLoose().equals("B") ? 
 									materialDB.getMaterialIncBalePrice().multiply(absoluteWeight)
 								: materialDB.getMaterialIncLoosePrice().multiply(absoluteWeight);
+							childTransaction1.setMaterialPrice(childTransaction1.getBaleOrLoose().equals("B") ? 
+									materialDB.getMaterialIncBalePrice().multiply(new BigDecimal(1000))
+								: materialDB.getMaterialIncLoosePrice().multiply(new BigDecimal(1000)));
 						} else if(dto.getTransferType().name().equals("OUT")) {
 							materialPriceWithoutVat = childTransaction1.getBaleOrLoose().equals("B") ? 
 									materialDB.getMaterialOutBalePrice().multiply(absoluteWeight)
 								: materialDB.getMaterialOutLoosePrice().multiply(absoluteWeight);
+							childTransaction1.setMaterialPrice(childTransaction1.getBaleOrLoose().equals("B") ? 
+									materialDB.getMaterialOutBalePrice().multiply(new BigDecimal(1000))
+								: materialDB.getMaterialOutLoosePrice().multiply(new BigDecimal(1000)));
 						} else {
 							materialPriceWithoutVat = childTransaction1.getBaleOrLoose().equals("B") ? 
 									materialDB.getMaterialOutBalePrice().multiply(absoluteWeight)
 								: materialDB.getMaterialOutLoosePrice().multiply(absoluteWeight);
 						}
-						childTransaction1.setMaterialPrice(materialPriceWithoutVat);
+						childTransaction1.setTransactionPrice(materialPriceWithoutVat);
 						childTransaction1.setVatIncluded(dto.getIncludeVat()); // set the vat 
 						if(dto.getIncludeVat()) {
-							childTransaction1.setMaterialPriceAfterVat(materialPriceWithoutVat.add(materialPriceWithoutVat.multiply(materialDB.getVat()).divide(new BigDecimal(100))));
+							childTransaction1.setTransactionPriceAfterVat(materialPriceWithoutVat.add(materialPriceWithoutVat.multiply(materialDB.getVat()).divide(new BigDecimal(100))));
 							childTransaction1.setVat(materialDB.getVat());
-							childTransaction1.setVatCost(childTransaction1.getMaterialPriceAfterVat().subtract(materialPriceWithoutVat));
+							childTransaction1.setVatCost(childTransaction1.getTransactionPriceAfterVat().subtract(materialPriceWithoutVat));
 						} else {
-							childTransaction1.setMaterialPriceAfterVat(materialPriceWithoutVat);
+							childTransaction1.setTransactionPriceAfterVat(materialPriceWithoutVat);
 							childTransaction1.setVat(new BigDecimal(0));
 							childTransaction1.setVatCost(new BigDecimal(0));
 						}
 						childTransaction1.setTransactionsHeader(transObj);
+
 						childTransactionRepository.save(childTransaction1);
 //						childTransactionList.add(childTransaction1);
 					}
 					transObj.setTransactionDetials(childTransactionList);
 					transObj.setTotalWeight(new BigDecimal(
 							childTransactionList.stream().mapToDouble(o -> o.getMaterialAbsoluteWeight().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
-					transObj.setMaterialPrice(new BigDecimal(
-							childTransactionList.stream().mapToDouble(o -> o.getMaterialPrice().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
+					transObj.setFinalAmountWithoutVat(new BigDecimal(
+							childTransactionList.stream().mapToDouble(o -> o.getTransactionPrice().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
 
 					transObj.setFinalAmountWithVat(new BigDecimal(
-							childTransactionList.stream().mapToDouble(o -> o.getMaterialPriceAfterVat().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
+							childTransactionList.stream().mapToDouble(o -> o.getTransactionPriceAfterVat().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP));
 //					transObj.setVatIncluded(dto.getIncludeVat());
 					transObj.setVatCost(transObj.getFinalAmountWithVat()
-							.subtract(transObj.getMaterialPrice()));
+							.subtract(transObj.getFinalAmountWithoutVat()));
 					dto.setTotalWeight(transObj.getTotalWeight());
 					dto.setVatCost(transObj.getVatCost());
 					//setting the final Amount without & with round off checking vat - 10-jun-23
@@ -168,12 +176,14 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionDto1.setMaterialType(childTransaction1.getMaterial().getMaterialId());
 						childTransactionDto1.setVat(childTransaction1.getVat());
 						childTransactionDto1.setVatCost(childTransaction1.getVatCost());
-						childTransactionDto1.setMaterialPricewithVat(childTransaction1.getMaterialPriceAfterVat());
-						childTransactionDto1.setMaterialPricewithoutVat(childTransaction1.getMaterialPrice());
+						childTransactionDto1.setTransactionPricewithVat(childTransaction1.getTransactionPriceAfterVat());
+						childTransactionDto1.setTransactionPricewithoutVat(childTransaction1.getTransactionPrice());
+						
+						childTransactionDto1.setMaterialPricePerTonne(childTransaction1.getMaterialPrice());
 						
 						//rounding off the amount - 10-jun-23
-						childTransactionDto1.setMaterialPricewithVatRoundOff(new BigDecimal(childTransaction1.getMaterialPriceAfterVat().toBigInteger().toString()));
-						childTransactionDto1.setMaterialPricewithoutVatRoundOff(new BigDecimal(childTransaction1.getMaterialPrice().toBigInteger().toString()));
+						childTransactionDto1.setTransactionPricewithVatRoundOff(new BigDecimal(childTransaction1.getTransactionPriceAfterVat().toBigInteger().toString()));
+						childTransactionDto1.setTransactionPricewithoutVatRoundOff(new BigDecimal(childTransaction1.getTransactionPrice().toBigInteger().toString()));
 						//get vat included or not - 11-jun-23
 						childTransactionDto1.setIncludeVat(childTransaction1.getVatIncluded());
 						childtransactionDetialsDTO2.add(childTransactionDto1);
@@ -234,6 +244,22 @@ public class TransactionserviceImpl implements TransactionService {
 							childTransactionNewAddition.setMaterialFirstWeight(lastRecordAdded.getFirstWeight());
 							childTransactionNewAddition.setVatIncluded(dto.getIncludeVat());
 							childTransactionNewAddition.setTransactionsHeader(transObj);
+							
+							if(dto.getTransferType().name().equals("INC")) {
+								childTransactionNewAddition.setMaterialPrice(lastRecordAdded.getBaleOrLoose().equals("B") ? 
+										materialDB.getMaterialIncBalePrice().multiply(new BigDecimal(1000))
+									: materialDB.getMaterialIncLoosePrice().multiply(new BigDecimal(1000)));
+							} else if(dto.getTransferType().name().equals("OUT")) {
+								childTransactionNewAddition.setMaterialPrice(lastRecordAdded.getBaleOrLoose().equals("B") ? 
+										materialDB.getMaterialOutBalePrice().multiply(new BigDecimal(1000))
+									: materialDB.getMaterialOutLoosePrice().multiply(new BigDecimal(1000)));
+							} else { // Outgoing considered default 
+								childTransactionNewAddition.setMaterialPrice(lastRecordAdded.getBaleOrLoose().equals("B") ? 
+										materialDB.getMaterialOutBalePrice().multiply(new BigDecimal(1000))
+									: materialDB.getMaterialOutLoosePrice().multiply(new BigDecimal(1000)));
+							}
+							
+						
 							ChildTransaction newChildTransaction = childTransactionRepository.saveAndFlush(childTransactionNewAddition);
 							dto.getChildTransactionDtoList().get(sizeOfChildRecords-1)
 								.setId(newChildTransaction.getChildTransactionId());
@@ -284,17 +310,18 @@ public class TransactionserviceImpl implements TransactionService {
 							childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
 							childTransactionDto.setVat(childtrans.getVat());
 							childTransactionDto.setVatCost(childtrans.getVatCost());
-							childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
-							childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+							childTransactionDto.setTransactionPricewithoutVat(childtrans.getTransactionPrice());
+							childTransactionDto.setTransactionPricewithVat(childtrans.getTransactionPriceAfterVat());
 							
 							//rounding off the amount - 10-jun-23
-							if(childtrans.getMaterialPriceAfterVat()!=null) {
-								childTransactionDto.setMaterialPricewithVatRoundOff(new BigDecimal(childtrans.getMaterialPriceAfterVat().toBigInteger().toString()));
+							if(childtrans.getTransactionPriceAfterVat()!=null) {
+								childTransactionDto.setTransactionPricewithVatRoundOff(new BigDecimal(childtrans.getTransactionPriceAfterVat().toBigInteger().toString()));
 							}
-							if(childtrans.getMaterialPrice()!=null) {
-								childTransactionDto.setMaterialPricewithoutVatRoundOff(new BigDecimal(childtrans.getMaterialPrice().toBigInteger().toString()));
+							if(childtrans.getTransactionPrice()!=null) {
+								childTransactionDto.setTransactionPricewithoutVatRoundOff(new BigDecimal(childtrans.getTransactionPrice().toBigInteger().toString()));
 							}
 							
+							childTransactionDto.setMaterialPricePerTonne(childtrans.getMaterialPrice());
 							childTransactionDto.setIncludeVat(childtrans.getVatIncluded());
 							childTransactionDto.setId(childtrans.getChildTransactionId());
 							transactionDetials.add(childTransactionDto);
@@ -386,16 +413,17 @@ public class TransactionserviceImpl implements TransactionService {
 						childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
 						childTransactionDto.setVat(childtrans.getVat());
 						childTransactionDto.setVatCost(childtrans.getVatCost());
-						childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
-						childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+						childTransactionDto.setTransactionPricewithoutVat(childtrans.getTransactionPrice());
+						childTransactionDto.setTransactionPricewithVat(childtrans.getTransactionPriceAfterVat());
 						
 						//rounding off the amount - 10-jun-23
-						if(childtrans.getMaterialPriceAfterVat()!=null) {
-							childTransactionDto.setMaterialPricewithVatRoundOff(new BigDecimal(childtrans.getMaterialPriceAfterVat().toBigInteger().toString()));
+						if(childtrans.getTransactionPriceAfterVat()!=null) {
+							childTransactionDto.setTransactionPricewithVatRoundOff(new BigDecimal(childtrans.getTransactionPriceAfterVat().toBigInteger().toString()));
 						}
-						if(childtrans.getMaterialPrice()!=null) {
-							childTransactionDto.setMaterialPricewithoutVatRoundOff(new BigDecimal(childtrans.getMaterialPrice().toBigInteger().toString()));
+						if(childtrans.getTransactionPrice()!=null) {
+							childTransactionDto.setTransactionPricewithoutVatRoundOff(new BigDecimal(childtrans.getTransactionPrice().toBigInteger().toString()));
 						}
+						childTransactionDto.setMaterialPricePerTonne(childtrans.getMaterialPrice());
 						childTransactionDto.setIncludeVat(childtrans.getVatIncluded());
 						childTransactionDto.setId(childtrans.getChildTransactionId());
 						transactionDetials.add(childTransactionDto);
@@ -456,16 +484,17 @@ public class TransactionserviceImpl implements TransactionService {
 					childTransactionDto.setMaterialType(childtrans.getMaterial().getMaterialId());
 					childTransactionDto.setVat(childtrans.getVat());
 					childTransactionDto.setVatCost(childtrans.getVatCost());
-					childTransactionDto.setMaterialPricewithoutVat(childtrans.getMaterialPrice());
-					childTransactionDto.setMaterialPricewithVat(childtrans.getMaterialPriceAfterVat());
+					childTransactionDto.setTransactionPricewithoutVat(childtrans.getTransactionPrice());
+					childTransactionDto.setTransactionPricewithVat(childtrans.getTransactionPriceAfterVat());
 					
 					//rounding off the amount - 10-jun-23
-					if(childtrans.getMaterialPriceAfterVat()!=null) {
-						childTransactionDto.setMaterialPricewithVatRoundOff(new BigDecimal(childtrans.getMaterialPriceAfterVat().toBigInteger().toString()));
+					if(childtrans.getTransactionPriceAfterVat()!=null) {
+						childTransactionDto.setTransactionPricewithVatRoundOff(new BigDecimal(childtrans.getTransactionPriceAfterVat().toBigInteger().toString()));
 					}
-					if(childtrans.getMaterialPrice()!=null) {
-						childTransactionDto.setMaterialPricewithoutVatRoundOff(new BigDecimal(childtrans.getMaterialPrice().toBigInteger().toString()));
+					if(childtrans.getTransactionPrice()!=null) {
+						childTransactionDto.setTransactionPricewithoutVatRoundOff(new BigDecimal(childtrans.getTransactionPrice().toBigInteger().toString()));
 					}
+					childTransactionDto.setMaterialPricePerTonne(childtrans.getMaterialPrice());
 					childTransactionDto.setIncludeVat(childtrans.getVatIncluded());
 					childTransactionDto.setId(childtrans.getChildTransactionId());
 					transactionDetials.add(childTransactionDto);
@@ -502,24 +531,51 @@ public class TransactionserviceImpl implements TransactionService {
 	
 
 private String format_date(LocalDateTime time) {
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	Date d=new Date();
-	try {
-		d = sdf.parse(time.toString());
-	} catch (ParseException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	String formattedTime = output.format(d);
-	return formattedTime;
+	
+	// Format the OffsetDateTime to ISO 8601 format
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    String utcTimeInISOFormat = time.format(formatter);
+	return utcTimeInISOFormat;
+	
+	
+// Old Code
+	
+//	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//	SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//	Date d=new Date();
+//	try {
+//		d = sdf.parse(time.toString());
+//	} catch (ParseException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	String formattedTime = output.format(d);
+//	return formattedTime;
+	
+    
+// Below for UTC ISO format	
+	
+//        // Get the current LocalDateTime
+//        LocalDateTime localDateTime = LocalDateTime.now();
+//
+//        // Convert the LocalDateTime to an OffsetDateTime with UTC offset
+//        OffsetDateTime offsetDateTime = localDateTime.atOffset(ZoneOffset.UTC);
+//
+//        // Format the OffsetDateTime to ISO 8601 format
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//        String utcTimeInISOFormat = offsetDateTime.format(formatter);
+//
+//        // Print the UTC time in ISO format
+//        System.out.println(utcTimeInISOFormat);
+  
+	
 }
 
-@Scheduled(cron = "${app.scheduler.transaction.process.cron}")
-public void schedulerOnMidnight() {   
-	transactionRepository.updateTransactionGreatTwentyFourHr();
-
-}
+//@Scheduled(cron = "${app.scheduler.transaction.process.cron}")
+//public void schedulerOnMidnight() {   
+//	transactionRepository.updateTransactionGreatTwentyFourHr();
+//
+//}
 
 
 }
