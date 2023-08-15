@@ -42,7 +42,7 @@ public class TransactionController {
 	@GetMapping("/transaction/transactionList/{sortParam}/{order}")
 	public  List<TransactionDto> fetchTransactionList(@PathVariable("sortParam")String sortParam, 
 			@PathVariable("order")int order){
-		LOGGER.debug("Inside fetchVehicleList method of TransactionController ");
+		LOGGER.debug("Inside transactionList method of TransactionController ");
 		return transactionService.fetchTransactionList(sortParam, order);
 	}
 
