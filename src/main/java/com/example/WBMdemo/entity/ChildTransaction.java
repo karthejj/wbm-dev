@@ -66,13 +66,13 @@ public class ChildTransaction {
 	private TransactionsHeader transactionsHeader;
 	
 	@Column(name = "created_by", length = 50)
-	private Long createdBy;
+	private String createdBy;
 
 	@Column(name = "created_date")
 	private LocalDateTime createdDateTime;
 	
 	@Column(name = "modified_by", length = 50)
-	private Long modifiedBy;
+	private String modifiedBy;
 	
 	@Column(name = "modified_date")
 	private LocalDateTime modifiedDateTime;
@@ -83,5 +83,10 @@ public class ChildTransaction {
 	@Column(name = "MATERIAL_PRICE1")
 	private BigDecimal materialPrice;
 	
+	@Column(name = "FIRST_UPLOADED_FILE_ID")
+	private String firstUploadedFileId;
+	
+	@Column(name = "SECOND_UPLOADED_FILE_ID")
+	private String secondUploadedFileId;
 	
 }

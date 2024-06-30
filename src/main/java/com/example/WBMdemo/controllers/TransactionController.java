@@ -5,16 +5,29 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.WBMdemo.dto.CommonTransactiondto;
 import com.example.WBMdemo.dto.TransactionDto;
+import com.example.WBMdemo.entity.FileDB;
 import com.example.WBMdemo.errors.TransactionNotFoundException;
+import com.example.WBMdemo.message.ResponseMessage;
+import com.example.WBMdemo.services.FileStorageService;
 import com.example.WBMdemo.services.TransactionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class TransactionController {
@@ -24,6 +37,31 @@ public class TransactionController {
 	@Autowired
 	private TransactionService transactionService;
 	
+	
+	@PostMapping(value = "/transaction/saveTransactions", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	public @ResponseBody TransactionDto saveTransaction(@RequestPart("transactionDetails") String transactionDetails,
+			@RequestPart("file") MultipartFile file) {
+//		TransactionDto dto = new TransactionDto();
+		ObjectMapper mapper = new ObjectMapper();
+		TransactionDto dto = new TransactionDto();
+		try {
+			dto = mapper.readValue(transactionDetails, TransactionDto.class);
+			dto.setFile(file);
+			LOGGER.debug("Inside savetemporaryTransaction method of TransactionController start ");
+			dto = transactionService.saveTransaction(dto);
+			
+			LOGGER.debug("Inside savetemporaryTransaction method of TransactionController end ");
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return dto;
+	}
+	
 	@PostMapping("/transaction/saveTransactions")
 	public @ResponseBody TransactionDto saveTransaction(@RequestBody TransactionDto dto) {
 		LOGGER.debug("Inside savetemporaryTransaction method of TransactionController start ");
@@ -32,6 +70,7 @@ public class TransactionController {
 		LOGGER.debug("Inside savetemporaryTransaction method of TransactionController end ");
 		return dtoResponse;
 	}
+
 	
 	@GetMapping("/transaction/transactionById/{Id}")
 	public TransactionDto getTransactionById(@PathVariable("Id") long transactionId) throws TransactionNotFoundException {
@@ -57,4 +96,21 @@ public class TransactionController {
 		LOGGER.debug("Inside fetchCurrentDayTransactionList method of TransactionController ");
 		return transactionService.fetchTemporaryTransactionList();
 	}
+	
+	@GetMapping("/transaction/transactionList")
+	public  CommonTransactiondto fetchTransactionListPagination(
+		 	 @RequestParam(name ="sortParam") String sortParam, 
+			 @RequestParam(name ="sortBy") String sortBy, 
+			 @RequestParam(name = "page") int page, 
+			 @RequestParam(name = "size") int size){
+		LOGGER.debug("Inside transactionList method of TransactionController ");
+		return transactionService.fetchTransactionListPage(sortParam, sortBy, page, size);
+	}
+	
+	@GetMapping("/transaction/temporaryTransactionList123")
+	public  List<TransactionDto> fetchTemporaryTransactionList123(){
+		LOGGER.debug("Inside fetchCurrentDayTransactionList method of TransactionController ");
+		return transactionService.fetchTemporaryTransactionList();
+	}
+	
 }

@@ -43,6 +43,14 @@ public interface TransactionRepository extends JpaRepository<TransactionsHeader,
 			+ "	AND transfer_type = 'WEIGH' AND created_date BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()", nativeQuery = true)
 	public void updateTransactionGreatTwentyFourHr();
 	
+	@Query(value = "SELECT count(*) as No_Transaction FROM postgreswbm.transactions_header hd "
+			+"where hd.status_id=2"
+			+" and date_trunc('day', hd.closed_date\\:\\:timestamp) >= to_date(:startDate, 'YYYY-MM-DD')"
+			+" and date_trunc('day', hd.closed_date\\:\\:timestamp) <= to_date(:endDate, 'YYYY-MM-DD')"
+			+" and hd.closed_by is not null ",
+			nativeQuery = true)
+
+	public Integer findCancelledTransactionCount(LocalDate startDate, LocalDate endDate);
 	
 	
 }

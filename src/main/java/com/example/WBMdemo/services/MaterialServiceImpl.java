@@ -35,7 +35,7 @@ public class MaterialServiceImpl implements MaterialService {
 		MaterialDTO material_dto; 
 		Material materialDB = null;
 		if(material.getMaterialId()!=null) {
-			materialDB = materialRepository.findByMaterialId(material.getMaterialId());
+			materialDB = materialRepository.findByMaterialLookupId(material.getMaterialId());
 		}
 		if(Objects.nonNull(materialDB)) {
 			materialDB.setMaterialName(material.getMaterialName());
@@ -62,7 +62,7 @@ public class MaterialServiceImpl implements MaterialService {
 //			}
 			materialDB.setVat(material.getVat());
 			materialRepository.save(materialDB);
-			material_dto = new MaterialDTO(materialDB.getMaterialId(), 
+			material_dto = new MaterialDTO(materialDB.getMaterialLookupId(), 
 					materialDB.getMaterialName(), materialDB.getVat(), materialDB.getMaterialIncBalePrice(), 
 					 materialDB.getMaterialIncLoosePrice(),  
 					 materialDB.getMaterialOutBalePrice(), 
@@ -75,9 +75,7 @@ public class MaterialServiceImpl implements MaterialService {
 			Material materialNew = new Material();
 //			Material materialDuplicate = materialRepository.findByMaterialName(material.getMaterialName());
 			materialNew.setMaterialName(material.getMaterialName());
-			System.out.println(material.getMaterialIncBalePrice());
-
-
+			materialNew.setMaterialLookupId(materialRepository.findLastAddedMaterialId()+1);
 			if(Objects.nonNull(material.getMaterialIncBalePrice())) {
 				materialNew.setMaterialIncBalePrice(material.getMaterialIncBalePrice());
 			}
@@ -94,7 +92,7 @@ public class MaterialServiceImpl implements MaterialService {
 			materialNew.setVat(material.getVat());
 			
 			materialRepository.save(materialNew);
-			material_dto = new MaterialDTO(materialNew.getMaterialId(), 
+			material_dto = new MaterialDTO(materialNew.getMaterialLookupId(), 
 					materialNew.getMaterialName(), materialNew.getVat(), materialNew.getMaterialIncBalePrice(), 
 					materialNew.getMaterialIncLoosePrice(),  
 					materialNew.getMaterialOutBalePrice(), 
@@ -127,7 +125,7 @@ public class MaterialServiceImpl implements MaterialService {
 					materialRepository.findAll(Sort.by(Sort.Direction.ASC));
 		}
 		for(Material materialNew : materialList) {
-			materialDtoList.add(new MaterialDTO(materialNew.getMaterialId(), 
+			materialDtoList.add(new MaterialDTO(materialNew.getMaterialLookupId(), 
 					materialNew.getMaterialName(), materialNew.getVat(), materialNew.getMaterialIncBalePrice(), 
 					materialNew.getMaterialIncLoosePrice(),  
 					materialNew.getMaterialOutBalePrice(), 
@@ -142,7 +140,7 @@ public class MaterialServiceImpl implements MaterialService {
 	@Override
 	public MaterialDTO getMaterial(long materialId) {
 		// TODO Auto-generated method stub
-		Material materialNew = materialRepository.findByMaterialId(materialId);
+		Material materialNew = materialRepository.findByMaterialLookupId(materialId);
 		return new MaterialDTO(materialNew.getMaterialId(), 
 				materialNew.getMaterialName(), materialNew.getVat(), materialNew.getMaterialIncBalePrice(), 
 				materialNew.getMaterialIncLoosePrice(),  
@@ -156,28 +154,28 @@ public class MaterialServiceImpl implements MaterialService {
 	@Override
 	public String getActualIncBaleMaterialCost(MaterialDTO material) {
 		// TODO Auto-generated method stub
-		return materialRepository.findByMaterialId(material.getMaterialId())
+		return materialRepository.findByMaterialLookupId(material.getMaterialId())
 				.getMaterialIncBalePrice().multiply(material.getMaterialWeight()).toString();
 	}
 
 	@Override
 	public String getActualIncLooseMaterialCost(MaterialDTO material) {
 		// TODO Auto-generated method stub
-		return materialRepository.findByMaterialId(material.getMaterialId())
+		return materialRepository.findByMaterialLookupId(material.getMaterialId())
 				.getMaterialIncLoosePrice().multiply(material.getMaterialWeight()).toString();
 	}
 
 	@Override
 	public String getActualOutBaleMaterialCost(MaterialDTO material) {
 		// TODO Auto-generated method stub
-		return materialRepository.findByMaterialId(material.getMaterialId())
+		return materialRepository.findByMaterialLookupId(material.getMaterialId())
 				.getMaterialOutBalePrice().multiply(material.getMaterialWeight()).toString();
 	}
 
 	@Override
 	public String getActualOutLooseMaterialCost(MaterialDTO material) {
 		// TODO Auto-generated method stub
-		return materialRepository.findByMaterialId(material.getMaterialId())
+		return materialRepository.findByMaterialLookupId(material.getMaterialId())
 				.getMaterialOutLoosePrice().multiply(material.getMaterialWeight()).toString();
 	}
 	

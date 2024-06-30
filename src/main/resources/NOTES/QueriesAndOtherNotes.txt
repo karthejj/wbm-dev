@@ -1,0 +1,597 @@
+Sample Transaction Req Res:
+
+Single Transation temporary :
+
+
+transactionDetails:
+
+{"customerName":"31-mar-2","customerId":"31-mar-2_23145623","vehicleNumber":"310302",
+"customerType":3,"phoneNumber":23145623,"driverCount":"1",
+"transferType":"INC","vehicleType":"HT",
+"cancelReason":"","isTransactionCompleted":0,
+"created_by":"MR1004","closed_by":"MR1004","rawWeightId":600,
+"childTransactionDtoList":
+[{"baleOrLoose":"L",
+"firstWeight":"0003917","materialType":4,"vat":0.15}
+]
+}
+
+file:<>
+
+response :
+
+{
+    "id": 454,
+    "customerName": "31-mar-2",
+    "customerId": "31-mar-2_23145623",
+    "vehicleNumber": "310302",
+    "customerType": 3,
+    "driverCount": 1,
+    "childTransactionDtoList": [
+        {
+            "Id": 481,
+            "firstWeight": 3917,
+            "secondWeight": null,
+            "absoluteWeight": null,
+            "materialType": 11,
+            "baleOrLoose": "L",
+            "vat": 0,
+            "vatCost": 0,
+            "transactionPricewithoutVat": 0.00,
+            "transactionPricewithVat": 0.00,
+            "transactionPricewithoutVatRoundOff": 0,
+            "transactionPricewithVatRoundOff": 0,
+            "includeVat": null,
+            "materialPricePerTonne": 300.00,
+            "firstUploadedFileId": "40a6b3cc-b090-415f-af5b-2c312d31fe94",
+            "secondUploadedFileId": "NA"
+        }
+    ],
+    "totalWeight": null,
+    "vatCost": null,
+    "finalAmount": null,
+    "isTransactionCompleted": false,
+    "isTransactionCancelled": false,
+    "transactionStatus": "temporary",
+    "cancelReason": "",
+    "transferType": "INC",
+    "phoneNumber": "23145623",
+    "includeVat": null,
+    "created_by": "MR1004",
+    "closed_by": null,
+    "created_date": "2024-03-31T06:04:50Z",
+    "closed_date": null,
+    "rawWeightId": "600",
+    "vehicleType": "HT",
+    "finalAmountRoundOff": null,
+    "exceptionMessage": null
+}
+
+Single Transaction completion :
+
+transactionDetails
+:
+{"customerName":"31-mar-2","customerId":"31-mar-2_23145623","vehicleNumber":"310302",
+"customerType":3,"phoneNumber":23145623,"driverCount":"1",
+"transferType":"INC","vehicleType":"HT",
+"cancelReason":"","isTransactionCompleted":1,"id": 454,
+"created_by":"MR1004","closed_by":"MR1004","rawWeightId":600,
+"childTransactionDtoList":
+[{"baleOrLoose":"L",
+"firstWeight":"0003917","secondWeight":"0003915","materialType":4,"vat":0.15}
+]
+}
+
+file:<>
+
+response :
+
+{
+    "id": 454,
+    "customerName": "31-mar-2",
+    "customerId": "31-mar-2_23145623",
+    "vehicleNumber": "310302",
+    "customerType": 3,
+    "driverCount": 1,
+    "childTransactionDtoList": [
+        {
+            "Id": 481,
+            "firstWeight": 3917.00,
+            "secondWeight": 3915,
+            "absoluteWeight": 2.00,
+            "materialType": 11,
+            "baleOrLoose": "L",
+            "vat": 0,
+            "vatCost": 0,
+            "transactionPricewithoutVat": 0.6000,
+            "transactionPricewithVat": 0.6000,
+            "transactionPricewithoutVatRoundOff": 0,
+            "transactionPricewithVatRoundOff": 0,
+            "includeVat": null,
+            "materialPricePerTonne": 300.00,
+            "firstUploadedFileId": "40a6b3cc-b090-415f-af5b-2c312d31fe94",
+            "secondUploadedFileId": "644d7f5b-7264-4235-8e59-259485477053"
+        }
+    ],
+    "totalWeight": 2.00,
+    "vatCost": 0.00,
+    "finalAmount": 0.60,
+    "isTransactionCompleted": true,
+    "isTransactionCancelled": false,
+    "transactionStatus": "completed",
+    "cancelReason": "",
+    "transferType": "INC",
+    "phoneNumber": "23145623",
+    "includeVat": null,
+    "created_by": "MR1004",
+    "closed_by": "MR1004",
+    "created_date": "2024-03-31T06:04:50Z",
+    "closed_date": "2024-03-31T06:07:25Z",
+    "rawWeightId": "600",
+    "vehicleType": "HT",
+    "finalAmountRoundOff": 0,
+    "exceptionMessage": null
+}
+
+MultiPle Transaction
+
+1st :
+
+https://ec2-13-200-250-228.ap-south-1.compute.amazonaws.com:8389/transaction/saveTransactions
+
+transactionDetails:
+{"customerName":"31-mar-1","customerId":"31-mar-1_23145623","vehicleNumber":"310301",
+"customerType":3,"phoneNumber":23145623,"driverCount":"1",
+"transferType":"INC","vehicleType":"HT",
+"cancelReason":"","isTransactionCompleted":0,
+"created_by":"MR1004","closed_by":"MR1004","rawWeightId":600,
+"childTransactionDtoList":
+[{"baleOrLoose":"L",
+"firstWeight":"0003917","materialType":4,"vat":0.15}
+]
+}
+
+file:
+<>
+
+response :
+
+{
+    "id": 453,
+    "customerName": "31-mar-1",
+    "customerId": "31-mar-1_23145623",
+    "vehicleNumber": "310301",
+    "customerType": 3,
+    "driverCount": 1,
+    "childTransactionDtoList": [
+        {
+            "Id": 479,
+            "firstWeight": 3917,
+            "secondWeight": null,
+            "absoluteWeight": null,
+            "materialType": 11,
+            "baleOrLoose": "L",
+            "vat": 0,
+            "vatCost": 0,
+            "transactionPricewithoutVat": 0.00,
+            "transactionPricewithVat": 0.00,
+            "transactionPricewithoutVatRoundOff": 0,
+            "transactionPricewithVatRoundOff": 0,
+            "includeVat": null,
+            "materialPricePerTonne": 300.00,
+            "firstUploadedFileId": "0693d386-7dcc-4802-8002-07406c2ecad8",
+            "secondUploadedFileId": "NA"
+        }
+    ],
+    "totalWeight": null,
+    "vatCost": null,
+    "finalAmount": null,
+    "isTransactionCompleted": false,
+    "isTransactionCancelled": false,
+    "transactionStatus": "temporary",
+    "cancelReason": "",
+    "transferType": "INC",
+    "phoneNumber": "23145623",
+    "includeVat": null,
+    "created_by": "MR1004",
+    "closed_by": null,
+    "created_date": "2024-03-31T05:54:16Z",
+    "closed_date": null,
+    "rawWeightId": "600",
+    "vehicleType": "HT",
+    "finalAmountRoundOff": null,
+    "exceptionMessage": null
+}
+
+
+
+2Nd
+
+transactionDetails:
+{"customerName":"31-mar-1","customerId":"31-mar-1_23145623","vehicleNumber":"310301",
+"customerType":3,"phoneNumber":23145623,"driverCount":"1",
+"transferType":"INC","vehicleType":"HT",
+"cancelReason":"","isTransactionCompleted":0,"id": 453,
+"created_by":"MR1004","closed_by":"MR1004","rawWeightId":600,
+"childTransactionDtoList":
+[{"baleOrLoose":"L",
+"firstWeight":"0003917","secondWeight":"0003915","materialType":4,"vat":0.15},{"baleOrLoose":"L",
+"firstWeight":"0003915","materialType":7,"vat":0.15}
+]
+}
+
+
+file:<>
+
+{
+    "id": 453,
+    "customerName": "31-mar-1",
+    "customerId": "31-mar-1_23145623",
+    "vehicleNumber": "310301",
+    "customerType": 3,
+    "driverCount": 1,
+    "childTransactionDtoList": [
+        {
+            "Id": 479,
+            "firstWeight": 3917.00,
+            "secondWeight": 3915,
+            "absoluteWeight": null,
+            "materialType": 11,
+            "baleOrLoose": "L",
+            "vat": 0.00,
+            "vatCost": 0.00,
+            "transactionPricewithoutVat": 0.00,
+            "transactionPricewithVat": 0.00,
+            "transactionPricewithoutVatRoundOff": 0,
+            "transactionPricewithVatRoundOff": 0,
+            "includeVat": null,
+            "materialPricePerTonne": 300.00,
+            "firstUploadedFileId": "0693d386-7dcc-4802-8002-07406c2ecad8",
+            "secondUploadedFileId": "9c9e5398-bf1e-48fc-97da-dd3efce50e58"
+        },
+        {
+            "Id": 480,
+            "firstWeight": 3915,
+            "secondWeight": null,
+            "absoluteWeight": null,
+            "materialType": 15,
+            "baleOrLoose": "L",
+            "vat": 0,
+            "vatCost": 0,
+            "transactionPricewithoutVat": 0.00,
+            "transactionPricewithVat": 0.00,
+            "transactionPricewithoutVatRoundOff": 0,
+            "transactionPricewithVatRoundOff": 0,
+            "includeVat": null,
+            "materialPricePerTonne": 1000.00,
+            "firstUploadedFileId": "9c9e5398-bf1e-48fc-97da-dd3efce50e58",
+            "secondUploadedFileId": "NA"
+        }
+    ],
+    "totalWeight": null,
+    "vatCost": null,
+    "finalAmount": null,
+    "isTransactionCompleted": false,
+    "isTransactionCancelled": false,
+    "transactionStatus": "temporary",
+    "cancelReason": "",
+    "transferType": "INC",
+    "phoneNumber": "23145623",
+    "includeVat": null,
+    "created_by": "MR1004",
+    "closed_by": null,
+    "created_date": "2024-03-31T05:54:16Z",
+    "closed_date": null,
+    "rawWeightId": "600",
+    "vehicleType": "HT",
+    "finalAmountRoundOff": null,
+    "exceptionMessage": null
+}
+
+3rd:
+
+transactionDetails
+:
+{"customerName":"31-mar-1","customerId":"31-mar-1_23145623","vehicleNumber":"310301",
+"customerType":3,"phoneNumber":23145623,"driverCount":"1",
+"transferType":"INC","vehicleType":"HT",
+"cancelReason":"","isTransactionCompleted":1,"id": 453,
+"created_by":"MR1004","closed_by":"MR1004","rawWeightId":600,
+"childTransactionDtoList":
+[{"baleOrLoose":"L",
+"firstWeight":"0003917","secondWeight":"0003915","materialType":4,"vat":0.15},{"baleOrLoose":"L",
+"firstWeight":"0003915","secondWeight":"0003913","materialType":7,"vat":0.15}
+]
+}
+
+file:<>
+
+response :
+
+{
+    "id": 453,
+    "customerName": "31-mar-1",
+    "customerId": "31-mar-1_23145623",
+    "vehicleNumber": "310301",
+    "customerType": 3,
+    "driverCount": 1,
+    "childTransactionDtoList": [
+        {
+            "Id": 479,
+            "firstWeight": 3917.00,
+            "secondWeight": 3915.00,
+            "absoluteWeight": 2.00,
+            "materialType": 11,
+            "baleOrLoose": "L",
+            "vat": 0,
+            "vatCost": 0,
+            "transactionPricewithoutVat": 0.6000,
+            "transactionPricewithVat": 0.6000,
+            "transactionPricewithoutVatRoundOff": 0,
+            "transactionPricewithVatRoundOff": 0,
+            "includeVat": null,
+            "materialPricePerTonne": 300.00,
+            "firstUploadedFileId": "0693d386-7dcc-4802-8002-07406c2ecad8",
+            "secondUploadedFileId": "9c9e5398-bf1e-48fc-97da-dd3efce50e58"
+        },
+        {
+            "Id": 480,
+            "firstWeight": 3915.00,
+            "secondWeight": 3913,
+            "absoluteWeight": 2.00,
+            "materialType": 15,
+            "baleOrLoose": "L",
+            "vat": 0,
+            "vatCost": 0,
+            "transactionPricewithoutVat": 2.0000,
+            "transactionPricewithVat": 2.0000,
+            "transactionPricewithoutVatRoundOff": 2,
+            "transactionPricewithVatRoundOff": 2,
+            "includeVat": null,
+            "materialPricePerTonne": 1000.00,
+            "firstUploadedFileId": "9c9e5398-bf1e-48fc-97da-dd3efce50e58",
+            "secondUploadedFileId": "54228c13-d886-4a6e-8c3b-6cdabf8097a3"
+        }
+    ],
+    "totalWeight": 4.00,
+    "vatCost": 0.00,
+    "finalAmount": 2.60,
+    "isTransactionCompleted": true,
+    "isTransactionCancelled": false,
+    "transactionStatus": "completed",
+    "cancelReason": "",
+    "transferType": "INC",
+    "phoneNumber": "23145623",
+    "includeVat": null,
+    "created_by": "MR1004",
+    "closed_by": "MR1004",
+    "created_date": "2024-03-31T05:54:16Z",
+    "closed_date": "2024-03-31T05:57:26Z",
+    "rawWeightId": "600",
+    "vehicleType": "HT",
+    "finalAmountRoundOff": 2,
+    "exceptionMessage": null
+}
+
+*************************************************************
+
+summary based on material
+
+SELECT mat.material_name MaterialName, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id and hd.transfer_type = 'OUT' and mat.id<>16
+group by mat.material_name
+
+SELECT mat.material_name MaterialName, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id and hd.transfer_type = 'INC' and mat.id<>16
+group by mat.material_name
+
+
+
+SELECT mat.material_name MaterialName, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id 
+and hd.transfer_type = 'WEIGH'
+and mat.id=16
+group by mat.material_name 
+
+
+
+select mat.material_name, (case when (listOne.qty1-listTwo.qty2) is null then listOne.qty1
+				   			when (listOne.qty1-listTwo.qty2) is not null then listOne.qty1-listTwo.qty2
+					END) as availableInYard
+from (
+	SELECT mat.id as id,
+sum(cht.material_weight) as qty1
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id 
+and cht.transaction_header_id = hd.id and hd.transfer_type = 'INC'
+group by mat.id
+) listOne left join
+(
+	SELECT mat.id as id,
+sum(cht.material_weight) as qty2
+FROM postgreswbm.material mat 
+left join postgreswbm.child_transaction cht on cht.material_id = mat.id 
+join postgreswbm.transactions_header hd on (hd.id = cht.transaction_header_id 
+and hd.transfer_type = 'OUT')
+group by mat.id
+) listTwo
+on listOne.id = listTwo.id
+join postgreswbm.material mat on mat.id = listOne.id and mat.id<>16
+
+******************************************************************************************
+
+
+with date :
+
+
+
+select mat.material_name, (case when (listOne.qty1-listTwo.qty2) is null then listOne.qty1
+				   			when (listOne.qty1-listTwo.qty2) is not null then listOne.qty1-listTwo.qty2
+					END) as availableInYard
+from (
+	SELECT mat.id as id,
+sum(cht.material_weight) as qty1
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id 
+and cht.transaction_header_id = hd.id and hd.transfer_type = 'INC'
+	and date_trunc('day', "closed_date") >= '2023-03-01'
+and date_trunc('day', "closed_date") < '2024-03-31'
+group by mat.id
+) listOne left join
+(
+	SELECT mat.id as id,
+sum(cht.material_weight) as qty2
+FROM postgreswbm.material mat 
+left join postgreswbm.child_transaction cht on cht.material_id = mat.id 
+join postgreswbm.transactions_header hd on (hd.id = cht.transaction_header_id 
+and hd.transfer_type = 'OUT'
+										   and date_trunc('day', "closed_date") >= '2023-03-01'
+and date_trunc('day', "closed_date") < '2024-03-31')
+group by mat.id
+) listTwo
+on listOne.id = listTwo.id
+join postgreswbm.material mat on mat.id = listOne.id and mat.id<>16
+
+
+
+
+
+SELECT mat.material_name MaterialName, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id and hd.transfer_type = 'INC' 
+and mat.id<>16
+and date_trunc('day', "closed_date") >= '2023-03-01'
+and date_trunc('day', "closed_date") < '2024-03-31'
+group by mat.material_name;
+
+*******************************************************************************************************
+
+ALTER TABLE postgreswbm.child_transaction 
+ALTER COLUMN created_by TYPE VARCHAR(255);
+
+ALTER TABLE postgreswbm.child_transaction 
+ALTER COLUMN modified_by TYPE VARCHAR(255);
+
+********************************************************************************
+
+summary by creation / modified by user
+
+SELECT cht.created_by CreatedBy, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id 
+and hd.transfer_type = 'INC' and mat.id<>16
+and cht.created_by is not null
+group by cht.created_by
+
+*********************************************************************************
+
+created by - with date :
+
+SELECT cht.created_by created_by, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id 
+and hd.transfer_type = 'INC' and mat.id<>16
+and date_trunc('day', cht."created_date") >= '2023-03-01'
+and date_trunc('day', cht."created_date") < '2024-06-30'
+and cht.created_by is not null
+group by cht.created_by
+
+********************************************************************************
+
+SELECT cht.modified_by modified_by, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id 
+and hd.transfer_type = 'OUT' and mat.id<>16
+and cht.modified_by is not null
+group by cht.modified_by
+
+********************************************************************************
+
+SELECT cht.modified_by modified_by, 
+count(*) as No_Transaction,
+sum(cht.material_weight) as Qty,
+sum(cht.material_price_after_vat) as MaterialPrice
+FROM postgreswbm.child_transaction cht,
+postgreswbm.material mat,
+postgreswbm.transactions_header hd
+where mat.id = cht.material_id and cht.transaction_header_id = hd.id 
+and hd.transfer_type = 'WEIGH' and mat.id<>16
+and cht.modified_by is not null
+group by cht.modified_by
+
+*******************************************************************************
+
+get the distinct user names from the child transaction
+
+select distinct uname from (
+select
+distinct cht.created_by as uname
+FROM postgreswbm.child_transaction cht
+where cht.created_by is not null
+union
+select
+distinct cht.modified_by as uname
+FROM postgreswbm.child_transaction cht
+where cht.created_by is not null
+) abc where uname is not null
+order by uname
+
+*****************************************************
+
+SELECT hd.closed_by closed_by, 
+count(*) as No_Transaction
+FROM 
+postgreswbm.transactions_header hd
+where 
+hd.status_id = 2 
+and date_trunc('day', hd."closed_date") >= '2023-03-01'
+and date_trunc('day', hd."closed_date") <= '2024-06-30'
+and hd.closed_by is not null
+group by hd.closed_by order by hd.closed_by
+
+****************************************
+
+ 
+

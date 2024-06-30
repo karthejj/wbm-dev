@@ -24,13 +24,16 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @Table(name = "MATERIAL", uniqueConstraints={@UniqueConstraint(columnNames={"MATERIAL_NAME"})})
-public class Material {
 
+public class Material {
 	@Id
 	@SequenceGenerator(name="material-seq-gen",sequenceName="MATERIAL_SEQ_GEN", initialValue=1, allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator="material-seq-gen")
 	@Column(name = "ID")
 	private Long materialId;
+	
+	@Column(name = "MATERIAL_LOOKUP_ID")
+	private Long materialLookupId;
 	
 	@Column(name = "MATERIAL_NAME")
 	private String materialName;
